@@ -36,7 +36,8 @@ namespace LRG.Game
             try
             {
                 ProjectileType projectileType = ProjectileType.Cannonball;
-                Projectile projectile = ProjectileFactory.Instance.Spawn(projectileType, _ballSpawn.position);
+                Projectile projectile = ProjectileFactory.Instance.Spawn(projectileType);
+                projectile.SetPosition(_ballSpawn.position);
                 projectile.AddForce(_trunnion.Trajectory, _cannonForce);
             }
             catch (PooledObjectTypeNotFoundException typeNotFoundEx)

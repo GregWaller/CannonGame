@@ -12,7 +12,7 @@ namespace LRG.Master
         K Key { get; }
 
         void Init();
-        void Initialize(Vector3 worldPosition);
+        void Reinitialize();
         void Activate(bool active);
         void Despawn();
     }
@@ -26,7 +26,7 @@ namespace LRG.Master
         protected bool _active = false;
 
         public abstract void Init();
-        public abstract void Initialize(Vector3 worldPosition);
+        public abstract void Reinitialize();
 
         public virtual void Activate(bool active)
         {

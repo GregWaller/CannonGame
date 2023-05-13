@@ -7,7 +7,7 @@ namespace LRG.Master
 {
     public interface IPooledObjectFactory<K, T>
     {
-        T Spawn(K key, Vector3 worldPosition);
+        T Spawn(K key);
         void Reclaim(T managedObject);
     }
 
@@ -40,7 +40,7 @@ namespace LRG.Master
             }
         }
 
-        public T Spawn(K key, Vector3 worldPosition)
+        public T Spawn(K key)
         {
             if (!_pooledObjects.ContainsKey(key) && !_objectPrefabMap.ContainsKey(key))
                 throw new PooledObjectTypeNotFoundException(nameof(key), $"CRITICAL ERROR: The requested type of object ({key}) has not been indexed or instantiated by this factory and cannot be spawned.");
@@ -52,7 +52,7 @@ namespace LRG.Master
                 ? _generate(key)
                 : _pooledObjects[key].Dequeue();
 
-            spawnedObject.Initialize(worldPosition);
+            spawnedObject.Reinitialize();
             spawnedObject.Activate(true);
             spawnedObject.OnDespawned += _object_despawned;
 

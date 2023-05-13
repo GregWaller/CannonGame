@@ -49,10 +49,14 @@ namespace LRG.Game
             _rigidbody = GetComponent<Rigidbody>();
         }
 
-        public override void Initialize(Vector3 position)
+        public override void Reinitialize()
         {
-            transform.position = position;
             _aliveDuration = 0.0f;
+        }
+
+        public void SetPosition(Vector3 worldPosition)
+        {
+            transform.position = worldPosition;
         }
         
         public override void Activate(bool active)

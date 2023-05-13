@@ -19,6 +19,7 @@ namespace LRG.Master
 
         [Header("UI/UX")]
         [SerializeField] private InputController _inputController = null;
+        [SerializeField] private LevelController _levelController = null;
         [SerializeField] private Cannon _cannon = null;
 
         public Cannon Cannon => _cannon;
@@ -34,6 +35,7 @@ namespace LRG.Master
 
             Debug.Log($"Initializing GameController v{CurrentVersion}...");
             Debug.Assert(_inputController != null, "InputController must be specified");
+            Debug.Assert(_levelController != null, "LevelController must be specified");
             //Debug.Assert(_desktop != null, "Console must be specified");
 
             Run(_load_scene());
@@ -223,6 +225,7 @@ namespace LRG.Master
 
             //_loadScreen.Show(false);
             //EventService.Instance.Broadcast(new MasterLoaded_MasterEvent());
+            _levelController.Begin();
 
             yield return null;
         }
