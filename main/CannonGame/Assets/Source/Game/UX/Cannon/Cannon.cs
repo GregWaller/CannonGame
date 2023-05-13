@@ -1,15 +1,16 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
-using LRG.Master;
-
 using UnityEngine;
 
 namespace LRG.Game
-{ 
+{
+    using LRG.Master;
+
     public class Cannon : MonoBehaviour
     {
         [SerializeField] private Trunnion _trunnion = null;
         [SerializeField] private Transform _ballSpawn = null;
+        [SerializeField] private float _cannonForce = 50.0f;
 
 #if UNITY_EDITOR
 
@@ -36,7 +37,7 @@ namespace LRG.Game
             {
                 ProjectileType projectileType = ProjectileType.Cannonball;
                 Projectile projectile = ProjectileFactory.Instance.Spawn(projectileType, _ballSpawn.position);
-                projectile.AddForce(_trunnion.Trajectory, 50.0f);
+                projectile.AddForce(_trunnion.Trajectory, _cannonForce);
             }
             catch (ProjectileTypeNotFoundException typeNotFoundEx)
             {

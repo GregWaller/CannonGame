@@ -1,11 +1,11 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
-using LRG.Master;
-
 using UnityEngine;
 
 namespace LRG.Game
 {
+    using LRG.Master;
+
     public enum ProjectileType
     {
         Unassigned,
@@ -18,7 +18,7 @@ namespace LRG.Game
         [SerializeField] private ProjectileType _projectileType = ProjectileType.Unassigned;
         [SerializeField] private float _timeToLive = 2.0f;
 
-        private Rigidbody _rb = null;
+        private Rigidbody _rigidbody = null;
         private IObjectPool<Projectile> _pool = null;
         private float _aliveDuration = 0.0f;
         private bool _active = false;
@@ -31,7 +31,7 @@ namespace LRG.Game
 
             _aliveDuration += Time.deltaTime;
             if (_aliveDuration >= _timeToLive)
-                _pool.Reclaim(this);
+                Despawn();
         }
 
 #if UNITY_EDITOR
@@ -55,19 +55,24 @@ namespace LRG.Game
         {
             _active = active;
             gameObject.SetActive(active);
-            _rb.velocity = Vector3.zero;
-            _rb.angularVelocity = Vector3.zero;
+            _rigidbody.velocity = Vector3.zero;
+            _rigidbody.angularVelocity = Vector3.zero;
+        }
+
+        public void Despawn()
+        {
+            _pool.Reclaim(this);
         }
 
         public void RegisterPool(IObjectPool<Projectile> projectilePool)
         {
             _pool = projectilePool;
-            _rb = GetComponent<Rigidbody>();
+            _rigidbody = GetComponent<Rigidbody>();
         }
         
         public void AddForce(Vector3 direction, float magnitude)
         {
-            _rb.AddForce(direction.normalized * magnitude, ForceMode.Impulse);
+            _rigidbody.AddForce(direction.normalized * magnitude, ForceMode.Impulse);
         }
     }
 }

@@ -4,8 +4,6 @@ using System;
 
 namespace LRG.Data
 {
-    using LRG.Master;
-
     public class VersionData : IEquatable<VersionData>
     {
         public int Major { get; set; }
@@ -21,8 +19,6 @@ namespace LRG.Data
             Patch = pat;
         }
 
-        public VersionData()
-            : this(GameController.CurrentVersion) { }
         public VersionData(VersionData cpy)
             : this(cpy.Major, cpy.Minor, cpy.Build, cpy.Patch) { }
 
@@ -61,8 +57,8 @@ namespace LRG.Data
         }
         public static bool operator ==(VersionData lh, VersionData rh)
         {
-            if (lh is null)
-                return rh is null;
+            if (lh is null || rh is null)
+                return false;
 
             return lh.Equals(rh);
         }
@@ -101,10 +97,10 @@ namespace LRG.Data
         }
         public override bool Equals(object obj)
         {
-            if (obj is null)
+            if (obj is null || obj is not VersionData versionData)
                 return false;
 
-            return ReferenceEquals(this, obj);
+            return Equals(versionData);
         }
         public override int GetHashCode()
         {
