@@ -39,7 +39,7 @@ namespace LRG.Game
                 Projectile projectile = ProjectileFactory.Instance.Spawn(projectileType, _ballSpawn.position);
                 projectile.AddForce(_trunnion.Trajectory, _cannonForce);
             }
-            catch (ProjectileTypeNotFoundException typeNotFoundEx)
+            catch (PooledObjectTypeNotFoundException typeNotFoundEx)
             {
                 Debug.LogError(typeNotFoundEx.Message);
             }

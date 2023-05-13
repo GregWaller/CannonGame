@@ -13,24 +13,24 @@ namespace LRG.Game
     }
 
     [RequireComponent(typeof(Rigidbody))]
-    public class Projectile : MonoBehaviour
+    public class Projectile : PooledObject<ProjectileType>
     {
         [SerializeField] private ProjectileType _projectileType = ProjectileType.Unassigned;
         [SerializeField] private float _timeToLive = 2.0f;
+        [SerializeField] private float _despawnPlane = -1.0f;
 
         private Rigidbody _rigidbody = null;
-        private IObjectPool<Projectile> _pool = null;
         private float _aliveDuration = 0.0f;
         private bool _active = false;
 
-        public ProjectileType ProjectileType => _projectileType;
+        public override ProjectileType Key => _projectileType;
 
         public void Update()
         {
             if (!_active) return;
 
             _aliveDuration += Time.deltaTime;
-            if (_aliveDuration >= _timeToLive)
+            if (_aliveDuration >= _timeToLive || transform.position.y <= _despawnPlane)
                 Despawn();
         }
 
@@ -44,14 +44,18 @@ namespace LRG.Game
         }
 
 #endif
+        public override void Init()
+        {
+            _rigidbody = GetComponent<Rigidbody>();
+        }
 
-        public void Initialize(Vector3 position)
+        public override void Initialize(Vector3 position)
         {
             transform.position = position;
             _aliveDuration = 0.0f;
         }
         
-        public void Activate(bool active)
+        public override void Activate(bool active)
         {
             _active = active;
             gameObject.SetActive(active);
@@ -59,17 +63,6 @@ namespace LRG.Game
             _rigidbody.angularVelocity = Vector3.zero;
         }
 
-        public void Despawn()
-        {
-            _pool.Reclaim(this);
-        }
-
-        public void RegisterPool(IObjectPool<Projectile> projectilePool)
-        {
-            _pool = projectilePool;
-            _rigidbody = GetComponent<Rigidbody>();
-        }
-        
         public void AddForce(Vector3 direction, float magnitude)
         {
             _rigidbody.AddForce(direction.normalized * magnitude, ForceMode.Impulse);
