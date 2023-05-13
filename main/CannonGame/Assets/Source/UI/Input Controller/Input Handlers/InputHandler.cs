@@ -1,26 +1,29 @@
-﻿using System;
+﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
-using UnityEngine;
-using UnityEngine.InputSystem;
+using System;
 
 namespace LRG.UI
 {
+    using LRG.Game;
+
     public interface IInputHandler
     {
         void Enter();
         void Exit();
         void Update();
     }
-    
+
     public abstract class InputHandler : IInputHandler, IDisposable
     {
         protected abstract InputMode _inputMode { get; }
         protected ActionManager _actionManager = null;
+        protected GameController _gameController = null;
 
         public bool IsActive { get; private set; } = false;
 
-        protected InputHandler(ActionManager actionManager)
+        protected InputHandler(GameController gameController, ActionManager actionManager)
         {
+            _gameController = gameController;
             _actionManager = actionManager;
         }
 

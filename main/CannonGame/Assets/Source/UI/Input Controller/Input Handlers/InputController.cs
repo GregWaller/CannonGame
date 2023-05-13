@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LRG.UI
 {
+    using LRG.Game;
+
     public interface IInputController
     {
     }
@@ -36,17 +38,25 @@ namespace LRG.UI
         private delegate void _modeEnterDelegate();
         private delegate void _modeExitDelegate();
         private Dictionary<InputMode, _modeSwitch> _modeSwitchMap;
-        private Dictionary<InputMode, InputHandler> _inputHandlerMap;
+        private Dictionary<InputMode, IInputHandler> _inputHandlerMap;
 
         public InputMode CurrentMode => _currentInputMode;
         
-        private void Awake()
+        private void LateUpdate()
+        {
+            if (_inputHandlerMap == null)
+                return;
+
+            _inputHandlerMap[_currentInputMode].Update();
+        }
+
+        public void RegisterGameController(GameController gameController)
         {
             _actionManager = new ActionManager();
 
-            _inputHandlerMap = new Dictionary<InputMode, InputHandler>
+            _inputHandlerMap = new Dictionary<InputMode, IInputHandler>
             {
-                { InputMode.Play, new Play_InputHandler(_actionManager) },
+                { InputMode.Play, new Play_InputHandler(gameController, _actionManager) },
             };
             _modeSwitchMap = new Dictionary<InputMode, _modeSwitch>
             {
@@ -56,21 +66,9 @@ namespace LRG.UI
             _begin_mode(_currentInputMode);
         }
 
-        private void Update()
-        {
-        }
-
-        private void LateUpdate()
-        {
-            if (_inputHandlerMap == null)
-                return;
-
-            _inputHandlerMap[_currentInputMode].Update();
-        }
-
         #region Input Modes
 
-        public InputHandler GetInputHandlerForMode(InputMode mode)
+        public IInputHandler GetInputHandlerForMode(InputMode mode)
         {
             return _inputHandlerMap[mode];
         }
@@ -80,11 +78,13 @@ namespace LRG.UI
             _end_mode(_currentInputMode);
             _begin_mode(inputMode);
         }
+
         private void _end_mode(InputMode inputMode)
         {
             _modeSwitchMap[_currentInputMode].Exit();
             _inputHandlerMap[inputMode].Exit();
         }
+
         private void _begin_mode(InputMode inputMode)
         {
             _currentInputMode = inputMode;
@@ -92,9 +92,14 @@ namespace LRG.UI
             _inputHandlerMap[_currentInputMode].Enter();
         }
 
+        #endregion
+
+        #region Play Mode
+
         private void _entermode_play()
         {
         }
+
         private void _exitmode_play()
         {
         }
@@ -107,6 +112,7 @@ namespace LRG.UI
         {
             Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
         }
+
         private void _show_cursor(bool newState)
         {
             Cursor.visible = newState;

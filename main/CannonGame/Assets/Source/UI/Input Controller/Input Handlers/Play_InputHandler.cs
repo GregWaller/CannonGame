@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿/* © 2023 - Greg Waller.  All rights reserved. */
+
+using LRG.Game;
+
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace LRG.UI
@@ -9,8 +13,8 @@ namespace LRG.UI
 
         protected override InputMode _inputMode => InputMode.Play;
 
-        public Play_InputHandler(@ActionManager actionManager)
-            : base(actionManager)
+        public Play_InputHandler(GameController gameController, @ActionManager actionManager)
+            : base(gameController, actionManager)
         {
             _playmodeActions = _actionManager.Play;
             _playmodeActions.Disable();
@@ -46,8 +50,8 @@ namespace LRG.UI
         }
         private void _aim(InputAction.CallbackContext context)
         {
-            Debug.Log("Play_InputHandler::_aim");
             Vector2 value = context.ReadValue<Vector2>();
+            _gameController.Cannon.Aim(value);
         }
 
         private void _fire(InputAction.CallbackContext context)
