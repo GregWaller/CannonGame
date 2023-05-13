@@ -30,6 +30,7 @@ namespace LRG.Master
             // pools and factories
             //EffectGenerator.Instance.RegisterMaster(this);
             ProjectileFactory.Instance.Initialize();
+            TargetFactory.Instance.Initialize();
 
             Debug.Log($"Initializing GameController v{CurrentVersion}...");
             Debug.Assert(_inputController != null, "InputController must be specified");

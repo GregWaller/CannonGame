@@ -1,8 +1,6 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
 using System;
-using System.Runtime.CompilerServices;
-
 using UnityEngine;
 
 namespace LRG.Master
@@ -25,11 +23,16 @@ namespace LRG.Master
 
         public abstract K Key { get; }
 
+        protected bool _active = false;
+
         public abstract void Init();
         public abstract void Initialize(Vector3 worldPosition);
-        public abstract void Activate(bool active);
 
-        private IPooledObjectFactory<K, IPooledObject<K>> _pool = null;
+        public virtual void Activate(bool active)
+        {
+            _active = active;
+            gameObject.SetActive(active);
+        }
 
         public void Despawn()
         {

@@ -21,7 +21,6 @@ namespace LRG.Game
 
         private Rigidbody _rigidbody = null;
         private float _aliveDuration = 0.0f;
-        private bool _active = false;
 
         public override ProjectileType Key => _projectileType;
 
@@ -44,6 +43,7 @@ namespace LRG.Game
         }
 
 #endif
+
         public override void Init()
         {
             _rigidbody = GetComponent<Rigidbody>();
@@ -57,8 +57,8 @@ namespace LRG.Game
         
         public override void Activate(bool active)
         {
-            _active = active;
-            gameObject.SetActive(active);
+            base.Activate(active);
+
             _rigidbody.velocity = Vector3.zero;
             _rigidbody.angularVelocity = Vector3.zero;
         }
