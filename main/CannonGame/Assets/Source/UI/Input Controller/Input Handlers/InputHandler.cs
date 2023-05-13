@@ -4,7 +4,7 @@ using System;
 
 namespace LRG.UI
 {
-    using LRG.Game;
+    using LRG.Master;
 
     public interface IInputHandler
     {

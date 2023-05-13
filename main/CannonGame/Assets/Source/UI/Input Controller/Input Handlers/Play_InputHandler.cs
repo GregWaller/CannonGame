@@ -1,12 +1,12 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
-using LRG.Game;
-
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace LRG.UI
 {
+    using LRG.Master;
+
     public class Play_InputHandler : InputHandler
     {
         private readonly @ActionManager.PlayActions _playmodeActions;
@@ -35,6 +35,7 @@ namespace LRG.UI
         {
             _playmodeActions.Enable();
         }
+
         protected override void _exit()
         {
             _playmodeActions.Disable();
@@ -44,10 +45,12 @@ namespace LRG.UI
         {
             _aim(context);
         }
+
         private void _aim_end(InputAction.CallbackContext context)
         {
             _aim(context);
         }
+
         private void _aim(InputAction.CallbackContext context)
         {
             Vector2 value = context.ReadValue<Vector2>();
@@ -56,7 +59,7 @@ namespace LRG.UI
 
         private void _fire(InputAction.CallbackContext context)
         {
-            Debug.Log("Play_InputHandler::_fire");
+            _gameController.Cannon.Fire();
         }
     }
 }

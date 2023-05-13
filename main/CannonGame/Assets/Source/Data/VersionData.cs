@@ -4,7 +4,7 @@ using System;
 
 namespace LRG.Data
 {
-    using LRG.Game;
+    using LRG.Master;
 
     public class VersionData : IEquatable<VersionData>
     {

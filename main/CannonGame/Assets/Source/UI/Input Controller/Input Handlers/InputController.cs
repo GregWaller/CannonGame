@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace LRG.UI
 {
-    using LRG.Game;
+    using LRG.Master;
 
     public interface IInputController
     {
@@ -98,10 +98,14 @@ namespace LRG.UI
 
         private void _entermode_play()
         {
+            //_lock_cursor(true);
+            //_show_cursor(false);
         }
 
         private void _exitmode_play()
         {
+            //_lock_cursor(false);
+            //_show_cursor(true);
         }
 
         #endregion
@@ -119,6 +123,5 @@ namespace LRG.UI
         }
 
         #endregion
-
     }
 }

@@ -4,10 +4,11 @@ using System.Collections;
 using UnityEngine;
 using UnityEditor;
 
-namespace LRG.Game
+namespace LRG.Master
 {
     using LRG.Data;
     using LRG.UI;
+    using LRG.Game;
 
     public class GameController : MonoBehaviour
     {
@@ -28,7 +29,7 @@ namespace LRG.Game
 
             // pools and factories
             //EffectGenerator.Instance.RegisterMaster(this);
-            //EffectFactory.Instance.RegisterMaster(this);
+            ProjectileFactory.Instance.Initialize();
 
             Debug.Log($"Initializing GameController v{CurrentVersion}...");
             Debug.Assert(_inputController != null, "InputController must be specified");
@@ -168,7 +169,7 @@ namespace LRG.Game
 
         private IEnumerator _init_character()
         {
-            Debug.Log("Establishing Psycho-cognitive navigation and determination overlay...");
+            Debug.Log("Initializing player interface");
 
             //_pc.RegisterMaster(this, _inputController);
 
