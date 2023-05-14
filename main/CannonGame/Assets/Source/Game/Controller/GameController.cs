@@ -20,9 +20,8 @@ namespace LRG.Master
         [Header("UI/UX")]
         [SerializeField] private InputController _inputController = null;
         [SerializeField] private LevelController _levelController = null;
-        [SerializeField] private Cannon _cannon = null;
 
-        public Cannon Cannon => _cannon;
+        public Cannon Cannon => _levelController.Player.Cannon;
 
         public virtual void Start()
         {

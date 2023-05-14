@@ -6,6 +6,12 @@ namespace LRG.Game
 {
     using LRG.Master;
 
+    public enum TrackingMode
+    {
+        Manual,
+        Automatic
+    };
+
     public class Cannon : MonoBehaviour
     {
         [SerializeField] private Trunnion _trunnion = null;
@@ -25,10 +31,20 @@ namespace LRG.Game
 
 #endif
 
+        public void SetMode(TrackingMode mode)
+        {
+            _trunnion.SetMode(mode);
+        }
+
         public void Aim(Vector2 inputVector)
         {
             if (_trunnion == null) return;
             _trunnion.Aim(inputVector);
+        }
+
+        public void Track(Transform target)
+        {
+            _trunnion.Track(target);
         }
 
         public void Fire()
@@ -38,6 +54,7 @@ namespace LRG.Game
                 ProjectileType projectileType = ProjectileType.Cannonball;
                 Projectile projectile = ProjectileFactory.Instance.Spawn(projectileType);
                 projectile.SetPosition(_ballSpawn.position);
+                projectile.Source = this;
                 projectile.AddForce(_trunnion.Trajectory, _cannonForce);
             }
             catch (PooledObjectTypeNotFoundException typeNotFoundEx)

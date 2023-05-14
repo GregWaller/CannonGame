@@ -116,6 +116,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _projectileType: 1
   _timeToLive: 5
+  _despawnPlane: -5
 --- !u!135 &-4612969015786404304
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -1,11 +1,10 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace LRG.Game
 {
-    using System.Collections.Generic;
-
     using LRG.Master;
 
     public enum TargetType
@@ -14,36 +13,52 @@ namespace LRG.Game
         SmallShip,
     }
 
-    // the type of ship determines
-    //      its ability to fire on the player
-    //      how much damage those shots deal
-    //      how often it fires
-    //      how fast it travels on the track
-    // and that target will sail back and forth on that track until either the player or target is killed
-
     [RequireComponent(typeof(Collider))]
-    public class Target : PooledObject<TargetType>
+    public abstract class Target : PooledObject<TargetType>
     {
         private const float _WAYPOINT_THRESHOLD = 0.001f;
+        protected abstract TargetType _targetType { get; }
 
-        [SerializeField] private TargetType _targetType = TargetType.Unassigned;
+        [Header("Movement")]
         [SerializeField] private float _minSpeed = 0.1f;
         [SerializeField] private float _maxSpeed = 0.5f;
+
+        [Header("Enemy Data")]
+        [SerializeField] private Cannon _cannon = null;
+        [SerializeField] private int _roundsPerMinute = 60;
+        [SerializeField] private float _accuracy = 1.0f;    // min accuracy is 1, max accuracy is 40
+                                                            // this should be a percentage of that range, inverted.  
+                                                            // for example, if a ship is 100% accurate, their resulting accuracy is 1, while a 50% accurate ship has an accuracy of 20
+
+        [SerializeField] private int _damagePerRound = 1;
 
         private Collider _collider = null;
         private int _currentWaypointIDX = 0;
         private List<Vector3> _waypoints = null;
         private float _currentSpeed = 0.0f;
+        private PlayerShip _playerShip = null;
+        private float _firingDelay = 0.0f;
 
         public override TargetType Key => _targetType;
         public Vector3 _currentWaypoint => _waypoints[_currentWaypointIDX];
+        private float _firingInterval => 60.0f / (float)_roundsPerMinute;
 
         public void Update()
         {
+            // ---- Patrols
             transform.position = Vector3.MoveTowards(transform.position, _currentWaypoint, _currentSpeed);
-
             if (Vector3.Distance(transform.position, _currentWaypoint) < _WAYPOINT_THRESHOLD)
                 _set_next_waypoint();
+
+            // ---- Firing
+            _firingDelay += Time.deltaTime;
+            if (_firingDelay >= _firingInterval)
+            {
+                _firingDelay = 0.0f;
+                _cannon.Fire();
+
+                // select a new target, and track it, based on my accuracy
+            }
         }
 
 #if UNITY_EDITOR
@@ -56,6 +71,17 @@ namespace LRG.Game
         }
 
 #endif
+
+        public virtual void OnCollisionEnter(Collision collision)
+        {
+            if (collision.gameObject.TryGetComponent(out Projectile projectile) && projectile.Source != _cannon)
+            {
+                projectile.Despawn();
+                Despawn();
+                _collider.enabled = false;
+            }
+        }
+
         public override void Init()
         {
             _collider = GetComponent<Collider>();
@@ -64,12 +90,12 @@ namespace LRG.Game
 
         public override void Activate(bool active)
         {
-            
+            gameObject.SetActive(active);
         }
 
         public override void Reinitialize()
         {
-            
+            _collider.enabled = true;
         }
 
         public void Patrol(List<Vector3> waypoints)
@@ -93,6 +119,13 @@ namespace LRG.Game
             gameObject.SetActive(true);
         }
 
+        public void SetTarget(PlayerShip playerShip)
+        {
+            _playerShip = playerShip;
+            _cannon.SetMode(TrackingMode.Automatic);
+            _cannon.Track(_playerShip.Target);
+        }
+
         private void _set_next_waypoint()
         {
             _currentWaypointIDX++;
@@ -102,14 +135,5 @@ namespace LRG.Game
             transform.LookAt(_currentWaypoint);
         }
 
-        public void OnCollisionEnter(Collision collision)
-        {
-            if (collision.gameObject.TryGetComponent(out Projectile projectile))
-            {
-                projectile.Despawn();
-                gameObject.SetActive(false);
-                Despawn();
-            }
-        }
     }
 }

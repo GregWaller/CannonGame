@@ -23,6 +23,7 @@ namespace LRG.Game
         private float _aliveDuration = 0.0f;
 
         public override ProjectileType Key => _projectileType;
+        public Cannon Source { get; set; } = null;
 
         public void Update()
         {
@@ -52,13 +53,14 @@ namespace LRG.Game
         public override void Reinitialize()
         {
             _aliveDuration = 0.0f;
+            Source = null;
         }
 
         public void SetPosition(Vector3 worldPosition)
         {
             transform.position = worldPosition;
         }
-        
+
         public override void Activate(bool active)
         {
             base.Activate(active);

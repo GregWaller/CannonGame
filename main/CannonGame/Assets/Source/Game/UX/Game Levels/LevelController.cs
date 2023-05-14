@@ -16,18 +16,15 @@ namespace LRG.Master
     public class LevelController : MonoBehaviour
     {
         [Header("Targets and AI")]
+        [SerializeField] private PlayerShip _playerShip = null;
         [SerializeField] private List<TargetTrack> _targetTracks = null;
 
         [Header("Levels")]
         [SerializeField] private float _levelCountdown = 3.0f;
         [SerializeField] private List<GameLevel> _gameLevels = null;
 
-        [Header("UX")]
-        [SerializeField] private int _baseHullStrength = 10;
-
         // ----- Game Data
         private uint _currentGold = 0;
-        private int _currentHull = 0;
 
         // ----- Level Data
         private int _currentLevel = 0;
@@ -35,6 +32,8 @@ namespace LRG.Master
         private float _currentCountdown = 0.0f;
         private int _targetCount = 0;
         private Coroutine _levelCoroutine = null;
+
+        public PlayerShip Player => _playerShip;
 
         public void Update()
         {
@@ -59,7 +58,6 @@ namespace LRG.Master
         public void Begin()
         {
             _currentGold = 0;
-            _currentHull = _baseHullStrength;
 
             _currentLevel = 0;
             _start_countdown();
@@ -91,6 +89,7 @@ namespace LRG.Master
                     {
                         Target target = targets.Dequeue();
                         target.OnDespawned += _target_despawned;
+                        target.SetTarget(_playerShip);
 
                         TargetTrack selectedTrack = availableTracks.Random();
                         selectedTrack.SetOccupant(target);
