@@ -47,7 +47,7 @@ namespace LRG.Game
             _trunnion.Track(target);
         }
 
-        public void Fire()
+        public void Fire(int damage)
         {
             try
             {
@@ -55,6 +55,7 @@ namespace LRG.Game
                 Projectile projectile = ProjectileFactory.Instance.Spawn(projectileType);
                 projectile.SetPosition(_ballSpawn.position);
                 projectile.Source = this;
+                projectile.Damage = damage;
                 projectile.AddForce(_trunnion.Trajectory, _cannonForce);
             }
             catch (PooledObjectTypeNotFoundException typeNotFoundEx)

@@ -23,9 +23,6 @@ namespace LRG.Master
         [SerializeField] private float _levelCountdown = 3.0f;
         [SerializeField] private List<GameLevel> _gameLevels = null;
 
-        // ----- Game Data
-        private uint _currentGold = 0;
-
         // ----- Level Data
         private int _currentLevel = 0;
         private bool _countdown = false;
@@ -57,7 +54,7 @@ namespace LRG.Master
 
         public void Begin()
         {
-            _currentGold = 0;
+            _playerShip.Reinitialize();
 
             _currentLevel = 0;
             _start_countdown();
@@ -89,6 +86,7 @@ namespace LRG.Master
                     {
                         Target target = targets.Dequeue();
                         target.OnDespawned += _target_despawned;
+                        target.OnDestroyed += _target_destroyed;
                         target.SetTarget(_playerShip);
 
                         TargetTrack selectedTrack = availableTracks.Random();
@@ -101,6 +99,12 @@ namespace LRG.Master
 
             _next_level();
             yield return null;
+        }
+
+        private void _target_destroyed(Target target)
+        {
+            target.OnDestroyed -= _target_destroyed;
+            _playerShip.GainGold(target.GoldValue); 
         }
 
         private void _target_despawned(IPooledObject<TargetType> obj)

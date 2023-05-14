@@ -24,6 +24,7 @@ namespace LRG.Game
 
         public override ProjectileType Key => _projectileType;
         public Cannon Source { get; set; } = null;
+        public int Damage { get; set; } = 0;
 
         public void Update()
         {

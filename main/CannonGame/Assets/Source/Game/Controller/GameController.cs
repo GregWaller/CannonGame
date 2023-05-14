@@ -21,7 +21,7 @@ namespace LRG.Master
         [SerializeField] private InputController _inputController = null;
         [SerializeField] private LevelController _levelController = null;
 
-        public Cannon Cannon => _levelController.Player.Cannon;
+        public PlayerShip Player => _levelController.Player;
 
         public virtual void Start()
         {

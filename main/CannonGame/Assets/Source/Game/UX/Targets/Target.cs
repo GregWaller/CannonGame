@@ -1,5 +1,6 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -16,6 +17,8 @@ namespace LRG.Game
     [RequireComponent(typeof(Collider))]
     public abstract class Target : PooledObject<TargetType>
     {
+        public event Action<Target> OnDestroyed = delegate { };
+
         private const float _WAYPOINT_THRESHOLD = 0.001f;
         protected abstract TargetType _targetType { get; }
 
@@ -31,6 +34,7 @@ namespace LRG.Game
                                                             // for example, if a ship is 100% accurate, their resulting accuracy is 1, while a 50% accurate ship has an accuracy of 20
 
         [SerializeField] private int _damagePerRound = 1;
+        [SerializeField] private int _goldValue = 100;
 
         private Collider _collider = null;
         private int _currentWaypointIDX = 0;
@@ -40,7 +44,8 @@ namespace LRG.Game
         private float _firingDelay = 0.0f;
 
         public override TargetType Key => _targetType;
-        public Vector3 _currentWaypoint => _waypoints[_currentWaypointIDX];
+        public int GoldValue => _goldValue;
+        private Vector3 _currentWaypoint => _waypoints[_currentWaypointIDX];
         private float _firingInterval => 60.0f / (float)_roundsPerMinute;
 
         public void Update()
@@ -55,9 +60,9 @@ namespace LRG.Game
             if (_firingDelay >= _firingInterval)
             {
                 _firingDelay = 0.0f;
-                _cannon.Fire();
+                _cannon.Fire(_damagePerRound);
 
-                // select a new target, and track it, based on my accuracy
+                // TODO: select a new target, and track it, based on my accuracy
             }
         }
 
@@ -78,6 +83,7 @@ namespace LRG.Game
             {
                 projectile.Despawn();
                 Despawn();
+                OnDestroyed?.Invoke(this);
                 _collider.enabled = false;
             }
         }
@@ -112,7 +118,7 @@ namespace LRG.Game
             _currentWaypointIDX = 0;
             transform.position = _currentWaypoint;
 
-            _currentSpeed = Random.Range(_minSpeed, _maxSpeed);
+            _currentSpeed = UnityEngine.Random.Range(_minSpeed, _maxSpeed);
 
             _set_next_waypoint();
 

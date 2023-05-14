@@ -46,6 +46,24 @@ namespace LRG.UI
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Repair"",
+                    ""type"": ""Button"",
+                    ""id"": ""73adb18f-131a-4695-a94b-c40ad8ddb528"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Purchase"",
+                    ""type"": ""Button"",
+                    ""id"": ""958b8d97-6a41-48a8-87c4-e56c78ad27ae"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -180,6 +198,28 @@ namespace LRG.UI
                     ""action"": ""Fire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4a6e228e-7855-415e-b17b-cbb565d12471"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Repair"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b81364f7-daf0-450c-84df-c440752f5d42"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Purchase"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -207,6 +247,8 @@ namespace LRG.UI
             m_Play = asset.FindActionMap("Play", throwIfNotFound: true);
             m_Play_Aim = m_Play.FindAction("Aim", throwIfNotFound: true);
             m_Play_Fire = m_Play.FindAction("Fire", throwIfNotFound: true);
+            m_Play_Repair = m_Play.FindAction("Repair", throwIfNotFound: true);
+            m_Play_Purchase = m_Play.FindAction("Purchase", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -270,12 +312,16 @@ namespace LRG.UI
         private List<IPlayActions> m_PlayActionsCallbackInterfaces = new List<IPlayActions>();
         private readonly InputAction m_Play_Aim;
         private readonly InputAction m_Play_Fire;
+        private readonly InputAction m_Play_Repair;
+        private readonly InputAction m_Play_Purchase;
         public struct PlayActions
         {
             private @ActionManager m_Wrapper;
             public PlayActions(@ActionManager wrapper) { m_Wrapper = wrapper; }
             public InputAction @Aim => m_Wrapper.m_Play_Aim;
             public InputAction @Fire => m_Wrapper.m_Play_Fire;
+            public InputAction @Repair => m_Wrapper.m_Play_Repair;
+            public InputAction @Purchase => m_Wrapper.m_Play_Purchase;
             public InputActionMap Get() { return m_Wrapper.m_Play; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -291,6 +337,12 @@ namespace LRG.UI
                 @Fire.started += instance.OnFire;
                 @Fire.performed += instance.OnFire;
                 @Fire.canceled += instance.OnFire;
+                @Repair.started += instance.OnRepair;
+                @Repair.performed += instance.OnRepair;
+                @Repair.canceled += instance.OnRepair;
+                @Purchase.started += instance.OnPurchase;
+                @Purchase.performed += instance.OnPurchase;
+                @Purchase.canceled += instance.OnPurchase;
             }
 
             private void UnregisterCallbacks(IPlayActions instance)
@@ -301,6 +353,12 @@ namespace LRG.UI
                 @Fire.started -= instance.OnFire;
                 @Fire.performed -= instance.OnFire;
                 @Fire.canceled -= instance.OnFire;
+                @Repair.started -= instance.OnRepair;
+                @Repair.performed -= instance.OnRepair;
+                @Repair.canceled -= instance.OnRepair;
+                @Purchase.started -= instance.OnPurchase;
+                @Purchase.performed -= instance.OnPurchase;
+                @Purchase.canceled -= instance.OnPurchase;
             }
 
             public void RemoveCallbacks(IPlayActions instance)
@@ -331,6 +389,8 @@ namespace LRG.UI
         {
             void OnAim(InputAction.CallbackContext context);
             void OnFire(InputAction.CallbackContext context);
+            void OnRepair(InputAction.CallbackContext context);
+            void OnPurchase(InputAction.CallbackContext context);
         }
     }
 }
