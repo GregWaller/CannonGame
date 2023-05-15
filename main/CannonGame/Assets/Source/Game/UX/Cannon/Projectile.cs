@@ -78,7 +78,6 @@ namespace LRG.Game
 
         public override void Reinitialize()
         {
-            base.Reinitialize();
             _aliveDuration = 0.0f;
             _rigidbody.velocity = Vector3.zero;
             _rigidbody.angularVelocity = Vector3.zero;

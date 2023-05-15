@@ -28,7 +28,6 @@ namespace LRG.Master
             Application.targetFrameRate = 120;
 
             // pools and factories
-            //EffectGenerator.Instance.RegisterMaster(this);
             ProjectileFactory.Instance.Initialize();
             TargetFactory.Instance.Initialize();
             VisualEffectFactory.Instance.Initialize();

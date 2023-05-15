@@ -1,20 +1,16 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 namespace LRG.Master
 {
-    using LRG.Data;
-    using LRG.UI;
     using LRG.Game;
 
     public class TargetTrack : MonoBehaviour
     {
         [SerializeField] private Transform _a = null;
-        [SerializeField] private Transform _b = null;
+        [SerializeField] private Transform _b = null; // TODO: Make this a list rather than an explicit pair.  Target traversal will also need to understand it as a list as well.
 
         private Target _occupant = null;
 
@@ -36,9 +32,9 @@ namespace LRG.Master
             if (occupant == null)
                 return;
 
-            // we'll select a random ordering of _a, _b or _b, _a
-            // and give these points to the occupant for its patrol
-            occupant.Patrol(new List<Vector3> { _a.position, _b.position });
+            List<Vector3> waypoints = new List<Vector3> { _a.position, _b.position };
+            waypoints.Shuffle();
+            occupant.Patrol(waypoints);
         }
     }
 }

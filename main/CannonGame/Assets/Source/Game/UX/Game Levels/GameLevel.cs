@@ -1,13 +1,12 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-using LRG.Game;
 
 namespace LRG.Master
 {
+    using LRG.Game;
+
     [CreateAssetMenu(fileName = "GameLevel", menuName = "Long Road Games/GameLevel/Level", order = 0)]
     public class GameLevel : ScriptableObject
     {

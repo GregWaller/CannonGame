@@ -1,16 +1,12 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 namespace LRG.UI
 {
-    using System;
-
     using LRG.Game;
-    using LRG.Master;
 
     public class AmmoCounterUI : MonoBehaviour
     {

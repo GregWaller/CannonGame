@@ -21,15 +21,13 @@ namespace LRG.Master
     {
         public event Action<IPooledObject<K>> OnDespawned = delegate { };
 
-        public abstract K Key { get; }
-
         protected bool _active = false;
 
-        public abstract void Init();
+        public abstract K Key { get; }
+        public bool Active => _active;
 
-        public virtual void Reinitialize()
-        {
-        }
+        public abstract void Init();
+        public abstract void Reinitialize();
 
         public virtual void Activate(bool active)
         {

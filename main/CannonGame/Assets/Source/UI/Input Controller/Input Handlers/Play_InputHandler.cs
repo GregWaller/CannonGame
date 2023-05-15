@@ -5,8 +5,6 @@ using UnityEngine.InputSystem;
 
 namespace LRG.UI
 {
-    using System;
-
     using LRG.Master;
 
     public class Play_InputHandler : InputHandler

@@ -1,14 +1,10 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
+using System;
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace LRG.Game
 {
-    using System;
-
-    using LRG.Master;
-
     [RequireComponent(typeof(Collider))]
     public class PlayerShip : MonoBehaviour
     {

@@ -1,7 +1,5 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -49,7 +47,6 @@ namespace LRG.Game
 
         public override void Reinitialize()
         {
-            base.Reinitialize();
             _awaitingFirstParticle = true;
         }
 

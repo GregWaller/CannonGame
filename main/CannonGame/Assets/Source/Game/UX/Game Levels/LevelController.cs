@@ -1,17 +1,15 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
+using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 namespace LRG.Master
 {
-    using LRG.Data;
     using LRG.UI;
     using LRG.Game;
-    using System;
-    using System.Linq;
 
     public class LevelController : MonoBehaviour
     {
