@@ -25,6 +25,7 @@ namespace LRG.Game
         [Header("Movement")]
         [SerializeField] private float _minSpeed = 0.1f;
         [SerializeField] private float _maxSpeed = 0.5f;
+        [SerializeField] private float _sinkingSpeed = 0.1f;
 
         [Header("Enemy Data")]
         [SerializeField] private Cannon _cannon = null;
@@ -36,12 +37,13 @@ namespace LRG.Game
         [SerializeField] private int _damagePerRound = 1;
         [SerializeField] private int _goldValue = 100;
 
-        private Collider _collider = null;
         private int _currentWaypointIDX = 0;
         private List<Vector3> _waypoints = null;
         private float _currentSpeed = 0.0f;
         private PlayerShip _playerShip = null;
         private float _firingDelay = 0.0f;
+        private bool _sinking = false;
+        private Vector3 _destroyedPosition = Vector3.zero;
 
         public override TargetType Key => _targetType;
         public int GoldValue => _goldValue;
@@ -50,6 +52,20 @@ namespace LRG.Game
 
         public void Update()
         {
+            if (_sinking)
+            {
+                Vector3 targetPosition = _destroyedPosition + (-Vector3.up * 10.0f);
+                transform.position = transform.position + (-Vector3.up * _sinkingSpeed);
+
+                Vector3 lookPosition = _destroyedPosition + (transform.forward * 75.0f);
+                transform.LookAt(lookPosition);
+
+                if (Vector3.Distance(transform.position, targetPosition) < 0.001f)
+                    _sink_complete();
+
+                return;
+            }
+
             // ---- Patrols
             transform.position = Vector3.MoveTowards(transform.position, _currentWaypoint, _currentSpeed);
             if (Vector3.Distance(transform.position, _currentWaypoint) < _WAYPOINT_THRESHOLD)
@@ -84,16 +100,14 @@ namespace LRG.Game
                 PooledEffect explosion = VisualEffectFactory.Instance.Spawn(EffectType.Target_Hit);
                 explosion.SetPosition(projectile.transform.position);
 
+                _sinking = true;
+                _destroyedPosition = transform.position;
                 projectile.Despawn();
-                Despawn();
-                OnDestroyed?.Invoke(this);
-                _collider.enabled = false;
             }
         }
 
         public override void Init()
         {
-            _collider = GetComponent<Collider>();
             _waypoints = new List<Vector3>();
         }
 
@@ -101,12 +115,14 @@ namespace LRG.Game
         {
             base.Activate(active);
             gameObject.SetActive(active);
+            
         }
 
-        public override void Reinitialize()
+        private void _sink_complete()
         {
-            base.Reinitialize();
-            _collider.enabled = true;
+            _sinking = false;
+            Despawn();
+            OnDestroyed?.Invoke(this);
         }
 
         public void Patrol(List<Vector3> waypoints)

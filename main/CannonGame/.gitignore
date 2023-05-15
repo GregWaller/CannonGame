@@ -5,6 +5,8 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]serSettings/
+/Assets/Art/Unused/
+/Assets/Art/Unused.meta
 
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/

@@ -261,6 +261,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _minSpeed: 0.05
   _maxSpeed: 0.15
+  _animator: {fileID: 0}
   _cannon: {fileID: 7589721819307370322}
   _roundsPerMinute: 15
   _accuracy: 1
