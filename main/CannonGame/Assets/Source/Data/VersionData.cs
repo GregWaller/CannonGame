@@ -55,6 +55,7 @@ namespace LRG.Data
         {
             return !(lh == rh);
         }
+
         public static bool operator ==(VersionData lh, VersionData rh)
         {
             if (lh is null || rh is null)
@@ -62,6 +63,7 @@ namespace LRG.Data
 
             return lh.Equals(rh);
         }
+
         public static bool operator <(VersionData lh, VersionData rh)
         {
             if (rh is null || lh is null)
@@ -72,6 +74,7 @@ namespace LRG.Data
                    lh.Build < rh.Build ||
                    lh.Patch < rh.Patch;
         }
+
         public static bool operator >(VersionData lh, VersionData rh)
         {
             if (rh is null || lh is null)
@@ -82,10 +85,12 @@ namespace LRG.Data
                    lh.Build > rh.Build ||
                    lh.Patch > rh.Patch;
         }
+
         public static bool operator <=(VersionData lh, VersionData rh)
         {
             return lh < rh || lh == rh;
         }
+
         public static bool operator >=(VersionData lh, VersionData rh)
         {
             return lh > rh || lh == rh;
@@ -95,6 +100,7 @@ namespace LRG.Data
         {
             return $"{Major}.{Minor}.{Build}.{Patch}";
         }
+
         public override bool Equals(object obj)
         {
             if (obj is null || obj is not VersionData versionData)
@@ -102,6 +108,7 @@ namespace LRG.Data
 
             return Equals(versionData);
         }
+
         public override int GetHashCode()
         {
             int hash = base.GetHashCode();

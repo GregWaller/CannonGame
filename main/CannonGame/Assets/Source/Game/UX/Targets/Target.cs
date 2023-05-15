@@ -1,8 +1,8 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
 using System;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace LRG.Game
 {
@@ -30,7 +30,7 @@ namespace LRG.Game
         [Header("Enemy Data")]
         [SerializeField] private Cannon _cannon = null;
         [SerializeField] private int _roundsPerMinute = 60;
-        [SerializeField] private float _accuracy = 1.0f;    // min accuracy is 1, max accuracy is 40
+        [SerializeField] private float _accuracy = 1.0f;    // TODO: min accuracy is 1, max accuracy is 40
                                                             // this should be a percentage of that range, inverted.  
                                                             // for example, if a ship is 100% accurate, their resulting accuracy is 1, while a 50% accurate ship has an accuracy of 20
 
@@ -49,6 +49,17 @@ namespace LRG.Game
         public int GoldValue => _goldValue;
         private Vector3 _currentWaypoint => _waypoints[_currentWaypointIDX];
         private float _firingInterval => 60.0f / (float)_roundsPerMinute;
+
+#if UNITY_EDITOR
+
+        public void OnDrawGizmos()
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position, transform.position + transform.forward);
+            Gizmos.DrawSphere(transform.position, 0.05f);
+        }
+
+#endif
 
         public void Update()
         {
@@ -81,17 +92,6 @@ namespace LRG.Game
                 // TODO: select a new target, and track it, based on my accuracy
             }
         }
-
-#if UNITY_EDITOR
-
-        public void OnDrawGizmos()
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(transform.position, transform.position + transform.forward);
-            Gizmos.DrawSphere(transform.position, 0.05f);
-        }
-
-#endif
 
         public virtual void OnCollisionEnter(Collision collision)
         {
@@ -161,6 +161,5 @@ namespace LRG.Game
 
             transform.LookAt(_currentWaypoint);
         }
-
     }
 }

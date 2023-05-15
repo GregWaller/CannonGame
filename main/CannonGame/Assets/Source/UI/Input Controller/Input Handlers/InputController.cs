@@ -98,14 +98,14 @@ namespace LRG.UI
 
         private void _entermode_play()
         {
-            //_lock_cursor(true);
-            //_show_cursor(false);
+            _lock_cursor(true);
+            _show_cursor(false);
         }
 
         private void _exitmode_play()
         {
-            //_lock_cursor(false);
-            //_show_cursor(true);
+            _lock_cursor(false);
+            _show_cursor(true);
         }
 
         #endregion

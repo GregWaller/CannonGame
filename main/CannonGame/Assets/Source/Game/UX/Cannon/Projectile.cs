@@ -26,28 +26,6 @@ namespace LRG.Game
         public Cannon Source { get; set; } = null;
         public int Damage { get; set; } = 0;
 
-        public void Update()
-        {
-            if (!_active) return;
-
-            _aliveDuration += Time.deltaTime;
-
-            if (transform.position.y <= _despawnPlane)
-            {
-                PooledEffect splash = VisualEffectFactory.Instance.Spawn(EffectType.Water_Splash);
-                splash.SetPosition(transform.position);
-                Despawn();
-
-                return;
-            }
-
-            if (_aliveDuration >= _timeToLive)
-            {
-                Despawn();
-                return;
-            }
-        }
-
 #if UNITY_EDITOR
 
         public void OnDrawGizmos()
@@ -58,6 +36,28 @@ namespace LRG.Game
         }
 
 #endif
+
+        public void Update()
+        {
+            if (!_active) return;
+
+            _aliveDuration += Time.deltaTime;
+
+            if (transform.position.y <= _despawnPlane)
+            {
+                PooledEffect splash = VisualEffectFactory.Instance.Spawn(EffectType.Water_Splash);
+                splash.SetPosition(transform.position);
+
+                Despawn();
+                return;
+            }
+
+            if (_aliveDuration >= _timeToLive)
+            {
+                Despawn();
+                return;
+            }
+        }
 
         public override void Despawn()
         {

@@ -1,5 +1,6 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,8 +8,8 @@ namespace LRG.Master
 {
     public interface IPooledObjectFactory<K, T>
     {
+        IEnumerator Initialize();
         T Spawn(K key);
-        void Reclaim(T managedObject);
         void DespawnAll();
     }
 
@@ -27,7 +28,7 @@ namespace LRG.Master
             _objectPrefabMap = new Dictionary<K, T>();
         }
 
-        public void Initialize()
+        public IEnumerator Initialize()
         {
             T[] prefabs = Resources.LoadAll<T>(_prefab_path);
 
@@ -40,44 +41,33 @@ namespace LRG.Master
                 }
 
                 _objectPrefabMap.Add(prefab.Key, prefab);
+                yield return null;
             }
+
+            yield return null;
         }
 
-        public T Spawn(K key)
+        public T Spawn(K requestedType)
         {
-            if (!_pooledObjects.ContainsKey(key) && !_objectPrefabMap.ContainsKey(key))
-                throw new PooledObjectTypeNotFoundException(nameof(key), $"CRITICAL ERROR: The requested type of object ({key}) has not been indexed or instantiated by this factory and cannot be spawned.");
+            if (!_pooledObjects.ContainsKey(requestedType) && !_objectPrefabMap.ContainsKey(requestedType))
+                throw new PooledObjectTypeNotFoundException(nameof(requestedType), $"CRITICAL ERROR: The requested type of object ({requestedType}) has not been indexed or instantiated by this factory and cannot be spawned.");
 
-            if (!_pooledObjects.ContainsKey(key))
-                _pooledObjects.Add(key, new Queue<T>());
+            if (!_pooledObjects.ContainsKey(requestedType))
+                _pooledObjects.Add(requestedType, new Queue<T>());
 
-            if (!_activeObjects.ContainsKey(key))
-                _activeObjects.Add(key, new List<T>());
+            if (!_activeObjects.ContainsKey(requestedType))
+                _activeObjects.Add(requestedType, new List<T>());
 
-            T spawnedObject = _pooledObjects[key].Count == 0
-                ? _generate(key)
-                : _pooledObjects[key].Dequeue();
+            T spawnedObject = _pooledObjects[requestedType].Count == 0
+                ? _generate(requestedType)
+                : _pooledObjects[requestedType].Dequeue();
 
             spawnedObject.Reinitialize();
             spawnedObject.Activate(true);
             spawnedObject.OnDespawned += _object_despawned;
-            _activeObjects[key].Add(spawnedObject);
+            _activeObjects[requestedType].Add(spawnedObject);
 
             return spawnedObject;
-        }
-
-        private T _generate(K requestedType)
-        {
-            T generatedObj = GameObject.Instantiate(_objectPrefabMap[requestedType]);
-            generatedObj.Init();
-            return generatedObj;
-        }
-
-        public void Reclaim(T managedObject)
-        {
-            _pooledObjects[managedObject.Key].Enqueue(managedObject);
-            _activeObjects[managedObject.Key].Remove(managedObject);
-            managedObject.Activate(false);
         }
 
         public void DespawnAll()
@@ -89,13 +79,27 @@ namespace LRG.Master
                     toReclaim.Add(managedObject);
 
             foreach (T managedObject in toReclaim)
-                Reclaim(managedObject);
+                _reclaim(managedObject);
         }
 
-        private void _object_despawned(IPooledObject<K> obj)
+        private T _generate(K requestedType)
         {
-            obj.OnDespawned -= _object_despawned;
-            Reclaim(obj as T);
+            T generatedObj = GameObject.Instantiate(_objectPrefabMap[requestedType]);
+            generatedObj.Init();
+            return generatedObj;
+        }
+
+        private void _object_despawned(IPooledObject<K> managedObject)
+        {
+            managedObject.OnDespawned -= _object_despawned;
+            _reclaim(managedObject as T);
+        }
+
+        private void _reclaim(T managedObject)
+        {
+            _pooledObjects[managedObject.Key].Enqueue(managedObject);
+            _activeObjects[managedObject.Key].Remove(managedObject);
+            managedObject.Activate(false);
         }
     }
 }
