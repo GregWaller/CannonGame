@@ -14,7 +14,8 @@ namespace LRG.Game
         Unassigned,
         Cannon_Fire, 
         Cannon_Smoke,
-        Water_Splash
+        Water_Splash,
+        Target_Hit
     };
 
     [RequireComponent(typeof(VisualEffect))]

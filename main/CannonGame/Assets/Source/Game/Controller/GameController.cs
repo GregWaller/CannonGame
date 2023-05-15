@@ -15,7 +15,7 @@ namespace LRG.Master
         public static string DevelopedBy = "Greg Waller";
         public static int CopyrightYear = 2023;
 
-        public static VersionData CurrentVersion { get; private set; } = new VersionData(0, 0, 2, 0);
+        public static VersionData CurrentVersion { get; private set; } = new VersionData(0, 0, 3, 0);
 
         [Header("UI/UX")]
         [SerializeField] private InputController _inputController = null;

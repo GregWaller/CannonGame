@@ -81,6 +81,9 @@ namespace LRG.Game
         {
             if (collision.gameObject.TryGetComponent(out Projectile projectile) && projectile.Source != _cannon)
             {
+                PooledEffect explosion = VisualEffectFactory.Instance.Spawn(EffectType.Target_Hit);
+                explosion.SetPosition(projectile.transform.position);
+
                 projectile.Despawn();
                 Despawn();
                 OnDestroyed?.Invoke(this);
