@@ -64,6 +64,15 @@ namespace LRG.UI
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Escape"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a406d38-d1a7-4ab3-aaf4-8766fe462c9b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -220,6 +229,17 @@ namespace LRG.UI
                     ""action"": ""Purchase"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f953f30a-f9fe-42db-ba5d-b1adec436fb4"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -249,6 +269,7 @@ namespace LRG.UI
             m_Play_Fire = m_Play.FindAction("Fire", throwIfNotFound: true);
             m_Play_Repair = m_Play.FindAction("Repair", throwIfNotFound: true);
             m_Play_Purchase = m_Play.FindAction("Purchase", throwIfNotFound: true);
+            m_Play_Escape = m_Play.FindAction("Escape", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -314,6 +335,7 @@ namespace LRG.UI
         private readonly InputAction m_Play_Fire;
         private readonly InputAction m_Play_Repair;
         private readonly InputAction m_Play_Purchase;
+        private readonly InputAction m_Play_Escape;
         public struct PlayActions
         {
             private @ActionManager m_Wrapper;
@@ -322,6 +344,7 @@ namespace LRG.UI
             public InputAction @Fire => m_Wrapper.m_Play_Fire;
             public InputAction @Repair => m_Wrapper.m_Play_Repair;
             public InputAction @Purchase => m_Wrapper.m_Play_Purchase;
+            public InputAction @Escape => m_Wrapper.m_Play_Escape;
             public InputActionMap Get() { return m_Wrapper.m_Play; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -343,6 +366,9 @@ namespace LRG.UI
                 @Purchase.started += instance.OnPurchase;
                 @Purchase.performed += instance.OnPurchase;
                 @Purchase.canceled += instance.OnPurchase;
+                @Escape.started += instance.OnEscape;
+                @Escape.performed += instance.OnEscape;
+                @Escape.canceled += instance.OnEscape;
             }
 
             private void UnregisterCallbacks(IPlayActions instance)
@@ -359,6 +385,9 @@ namespace LRG.UI
                 @Purchase.started -= instance.OnPurchase;
                 @Purchase.performed -= instance.OnPurchase;
                 @Purchase.canceled -= instance.OnPurchase;
+                @Escape.started -= instance.OnEscape;
+                @Escape.performed -= instance.OnEscape;
+                @Escape.canceled -= instance.OnEscape;
             }
 
             public void RemoveCallbacks(IPlayActions instance)
@@ -391,6 +420,7 @@ namespace LRG.UI
             void OnFire(InputAction.CallbackContext context);
             void OnRepair(InputAction.CallbackContext context);
             void OnPurchase(InputAction.CallbackContext context);
+            void OnEscape(InputAction.CallbackContext context);
         }
     }
 }

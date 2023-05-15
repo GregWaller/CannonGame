@@ -26,15 +26,17 @@ namespace LRG.Master
         protected bool _active = false;
 
         public abstract void Init();
-        public abstract void Reinitialize();
+
+        public virtual void Reinitialize()
+        {
+        }
 
         public virtual void Activate(bool active)
         {
             _active = active;
-            gameObject.SetActive(active);
         }
 
-        public void Despawn()
+        public virtual void Despawn()
         {
             OnDespawned?.Invoke(this);
         }

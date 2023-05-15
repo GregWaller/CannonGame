@@ -26,6 +26,7 @@ namespace LRG.UI
             _playmodeActions.Fire.performed += _fire;
             _playmodeActions.Repair.performed += _repair;
             _playmodeActions.Purchase.performed += _purchase;
+            _playmodeActions.Escape.performed += _quit;
         }
 
         public override void Dispose()
@@ -35,6 +36,7 @@ namespace LRG.UI
             _playmodeActions.Fire.performed -= _fire;
             _playmodeActions.Repair.performed -= _repair;
             _playmodeActions.Purchase.performed -= _purchase;
+            _playmodeActions.Escape.performed -= _quit;
         }
 
         protected override void _enter()
@@ -60,22 +62,27 @@ namespace LRG.UI
         private void _aim(InputAction.CallbackContext context)
         {
             Vector2 value = context.ReadValue<Vector2>();
-            _gameController.Player.Aim(value);
+            _gameController.LevelController.Player.Aim(value);
         }
 
         private void _fire(InputAction.CallbackContext context)
         {
-            _gameController.Player.Fire();
+            _gameController.LevelController.Player.Fire();
         }
 
         private void _repair(InputAction.CallbackContext obj)
         {
-            _gameController.Player.Repair();
+            _gameController.LevelController.Player.Repair();
         }
 
         private void _purchase(InputAction.CallbackContext obj)
         {
-            _gameController.Player.PurchaseAmmo();
+            _gameController.LevelController.Player.PurchaseAmmo();
+        }
+
+        private void _quit(InputAction.CallbackContext obj)
+        {
+            _gameController.LevelController.Cancel();
         }
     }
 }

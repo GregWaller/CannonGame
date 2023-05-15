@@ -13,13 +13,16 @@ namespace LRG.Game
         [SerializeField] private GameObject _barrel = null;
         [SerializeField] private GameObject _housing = null;
 
-        [Header("Rotation")]
-        [SerializeField] private float _maxRotationSpeed = 2.0f;
-        [SerializeField] private float _rotationSmoothing = 0.01f;
+        [Header("Yaw")]
+        [SerializeField] private float _maxYawSpeed = 2.0f;
+        [SerializeField] private float _yawSmoothing = 0.01f;
+
+        [Header("Pitch")]
+        [SerializeField] private float _maxPitchSpeed = 2.0f;
+        [SerializeField] private float _pitchSmoothing = 0.01f;
 
         // ----- Tracking Modes
         private TrackingMode _trackingMode = TrackingMode.Manual;
-        private Dictionary<TrackingMode, Action> _trackingCallbacks = null;
 
         // ----- Manual Tracking
         private Vector2 _inputVector = Vector2.zero;
@@ -31,20 +34,18 @@ namespace LRG.Game
         // ----- Automatic Tracking
         private Transform _target = null;
 
-        public Vector3 Trajectory => transform.forward;
-
-        public void Awake()
-        {
-            _trackingCallbacks = new Dictionary<TrackingMode, Action>
-            {
-                { TrackingMode.Manual, _manual_tracking },
-                { TrackingMode.Automatic, _auto_tracking }
-            };
-        }
+        public Vector3 Trajectory => _barrel.transform.forward;
 
         public void Update()
         {
-            _trackingCallbacks[_trackingMode].Invoke();
+            if (_trackingMode == TrackingMode.Automatic)
+                _auto_tracking();
+        }
+
+        public void LateUpdate()
+        {
+            if (_trackingMode == TrackingMode.Manual)
+                _manual_tracking();
         }
 
         public void SetMode(TrackingMode mode)
@@ -63,21 +64,26 @@ namespace LRG.Game
         {
             // the trunnion's yaw is based on the inputVector x axis
             if (_inputVector.x == 0.0f)
-                _currentYawSpeed = Mathf.MoveTowards(_currentYawSpeed, 0.0f, _rotationSmoothing);
+                _currentYawSpeed = Mathf.MoveTowards(_currentYawSpeed, 0.0f, _yawSmoothing);
             else
-                _currentYawSpeed = Mathf.MoveTowards(_currentYawSpeed, _maxRotationSpeed, _rotationSmoothing);
+                _currentYawSpeed = Mathf.MoveTowards(_currentYawSpeed, _maxYawSpeed, _yawSmoothing);
 
             // the trunnion's pitch is based on the inputVector y axis
             if (_inputVector.y == 0.0f)
-                _currentPitchSpeed = Mathf.MoveTowards(_currentPitchSpeed, 0.0f, _rotationSmoothing);
+                _currentPitchSpeed = Mathf.MoveTowards(_currentPitchSpeed, 0.0f, _pitchSmoothing);
             else
-                _currentPitchSpeed = Mathf.MoveTowards(_currentPitchSpeed, _maxRotationSpeed, _rotationSmoothing);
+                _currentPitchSpeed = Mathf.MoveTowards(_currentPitchSpeed, _maxPitchSpeed, _pitchSmoothing);
 
             _currentYaw += _inputVector.x * _currentYawSpeed;
             _currentPitch += _inputVector.y * _currentPitchSpeed;
 
-            Quaternion targetRotation = Quaternion.Euler(_currentPitch, _currentYaw, 0.0f);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime);
+            // rotate the entire trunnion based on the current yaw
+            Quaternion targetBaseRotation = Quaternion.Euler(0.0f, _currentYaw, 0.0f); 
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetBaseRotation, Time.deltaTime);
+
+            // then only rotate the barrel based on the current pitch
+            Quaternion targetBarrelRotation = Quaternion.Euler(_currentPitch, 0.0f, 0.0f);
+            _barrel.transform.localRotation = Quaternion.Lerp(_barrel.transform.localRotation, targetBarrelRotation, Time.deltaTime);
         }
 
         #endregion

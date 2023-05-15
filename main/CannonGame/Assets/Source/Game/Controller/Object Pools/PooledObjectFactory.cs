@@ -9,6 +9,7 @@ namespace LRG.Master
     {
         T Spawn(K key);
         void Reclaim(T managedObject);
+        void DespawnAll();
     }
 
     public abstract class PooledObjectFactory<K, T> : IPooledObjectFactory<K, T> where T : PooledObject<K>
@@ -16,11 +17,13 @@ namespace LRG.Master
         protected abstract string _prefab_path { get; }
 
         protected readonly Dictionary<K, Queue<T>> _pooledObjects = null;
+        protected readonly Dictionary<K, List<T>> _activeObjects = null;
         protected readonly Dictionary<K, T> _objectPrefabMap = null;
 
         protected PooledObjectFactory()
         {
             _pooledObjects = new Dictionary<K, Queue<T>>();
+            _activeObjects = new Dictionary<K, List<T>>();
             _objectPrefabMap = new Dictionary<K, T>();
         }
 
@@ -48,6 +51,9 @@ namespace LRG.Master
             if (!_pooledObjects.ContainsKey(key))
                 _pooledObjects.Add(key, new Queue<T>());
 
+            if (!_activeObjects.ContainsKey(key))
+                _activeObjects.Add(key, new List<T>());
+
             T spawnedObject = _pooledObjects[key].Count == 0
                 ? _generate(key)
                 : _pooledObjects[key].Dequeue();
@@ -55,6 +61,7 @@ namespace LRG.Master
             spawnedObject.Reinitialize();
             spawnedObject.Activate(true);
             spawnedObject.OnDespawned += _object_despawned;
+            _activeObjects[key].Add(spawnedObject);
 
             return spawnedObject;
         }
@@ -69,7 +76,20 @@ namespace LRG.Master
         public void Reclaim(T managedObject)
         {
             _pooledObjects[managedObject.Key].Enqueue(managedObject);
+            _activeObjects[managedObject.Key].Remove(managedObject);
             managedObject.Activate(false);
+        }
+
+        public void DespawnAll()
+        {
+            List<T> toReclaim = new List<T>();
+
+            foreach (K managedObjectType in _activeObjects.Keys)
+                foreach (T managedObject in _activeObjects[managedObjectType])
+                    toReclaim.Add(managedObject);
+
+            foreach (T managedObject in toReclaim)
+                Reclaim(managedObject);
         }
 
         private void _object_despawned(IPooledObject<K> obj)

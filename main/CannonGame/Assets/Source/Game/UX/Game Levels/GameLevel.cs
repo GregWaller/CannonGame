@@ -14,8 +14,10 @@ namespace LRG.Master
         [SerializeField] private List<TargetType> _spawnableTypes = null;
         [SerializeField] private uint _spawnCount = 1;
         [SerializeField] private float _spawnDelay = 2.0f;
+        [SerializeField] private int _completionAward = 1000;
 
         public float SpawnDelay => _spawnDelay;
+        public int CompletionAward => _completionAward;
 
         public Queue<Target> GetTargets()
         {

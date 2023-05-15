@@ -96,11 +96,13 @@ namespace LRG.Game
 
         public override void Activate(bool active)
         {
+            base.Activate(active);
             gameObject.SetActive(active);
         }
 
         public override void Reinitialize()
         {
+            base.Reinitialize();
             _collider.enabled = true;
         }
 

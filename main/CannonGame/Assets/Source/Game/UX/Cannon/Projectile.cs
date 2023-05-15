@@ -31,8 +31,21 @@ namespace LRG.Game
             if (!_active) return;
 
             _aliveDuration += Time.deltaTime;
-            if (_aliveDuration >= _timeToLive || transform.position.y <= _despawnPlane)
+
+            if (transform.position.y <= _despawnPlane)
+            {
+                PooledEffect splash = VisualEffectFactory.Instance.Spawn(EffectType.Water_Splash);
+                splash.SetPosition(transform.position);
                 Despawn();
+
+                return;
+            }
+
+            if (_aliveDuration >= _timeToLive)
+            {
+                Despawn();
+                return;
+            }
         }
 
 #if UNITY_EDITOR
@@ -46,28 +59,34 @@ namespace LRG.Game
 
 #endif
 
+        public override void Despawn()
+        {
+            base.Despawn();
+            Source = null;
+        }
+
         public override void Init()
         {
             _rigidbody = GetComponent<Rigidbody>();
         }
 
+        public override void Activate(bool active)
+        {
+            base.Activate(active);
+            gameObject.SetActive(active);
+        }
+
         public override void Reinitialize()
         {
+            base.Reinitialize();
             _aliveDuration = 0.0f;
-            Source = null;
+            _rigidbody.velocity = Vector3.zero;
+            _rigidbody.angularVelocity = Vector3.zero;
         }
 
         public void SetPosition(Vector3 worldPosition)
         {
             transform.position = worldPosition;
-        }
-
-        public override void Activate(bool active)
-        {
-            base.Activate(active);
-
-            _rigidbody.velocity = Vector3.zero;
-            _rigidbody.angularVelocity = Vector3.zero;
         }
 
         public void AddForce(Vector3 direction, float magnitude)

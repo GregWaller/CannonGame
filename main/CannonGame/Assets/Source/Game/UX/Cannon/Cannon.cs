@@ -16,6 +16,7 @@ namespace LRG.Game
     {
         [SerializeField] private Trunnion _trunnion = null;
         [SerializeField] private Transform _ballSpawn = null;
+        [SerializeField] private Transform _exhaust = null;
         [SerializeField] private float _cannonForce = 50.0f;
 
 #if UNITY_EDITOR
@@ -51,12 +52,17 @@ namespace LRG.Game
         {
             try
             {
-                ProjectileType projectileType = ProjectileType.Cannonball;
-                Projectile projectile = ProjectileFactory.Instance.Spawn(projectileType);
+                Projectile projectile = ProjectileFactory.Instance.Spawn(ProjectileType.Cannonball);
                 projectile.SetPosition(_ballSpawn.position);
                 projectile.Source = this;
                 projectile.Damage = damage;
                 projectile.AddForce(_trunnion.Trajectory, _cannonForce);
+
+                PooledEffect smoke = VisualEffectFactory.Instance.Spawn(EffectType.Cannon_Smoke);
+                smoke.SetPosition(_exhaust.position);
+
+                PooledEffect blast = VisualEffectFactory.Instance.Spawn(EffectType.Cannon_Fire);
+                blast.SetPosition(_exhaust.position, _trunnion.Trajectory);
             }
             catch (PooledObjectTypeNotFoundException typeNotFoundEx)
             {

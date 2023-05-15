@@ -15,6 +15,15 @@ namespace LRG.Master
 
     public class LevelController : MonoBehaviour
     {
+        public event Action OnGameExit = delegate { };
+
+        private enum GameState
+        {
+            MainMenu,
+            Play,
+            GameOver,
+        }
+
         [Header("Targets and AI")]
         [SerializeField] private PlayerShip _playerShip = null;
         [SerializeField] private List<TargetTrack> _targetTracks = null;
@@ -23,12 +32,19 @@ namespace LRG.Master
         [SerializeField] private float _levelCountdown = 3.0f;
         [SerializeField] private List<GameLevel> _gameLevels = null;
 
+        [Header("UI & Menus")]
+        [SerializeField] private MainMenuUI _mainMenu = null;
+        [SerializeField] private GameUI _gameScreen = null;
+        [SerializeField] private GameOverUI _gameOver = null;
+
         // ----- Level Data
         private int _currentLevel = 0;
         private bool _countdown = false;
         private float _currentCountdown = 0.0f;
         private int _targetCount = 0;
         private Coroutine _levelCoroutine = null;
+        private List<Target> _registeredTargets = null;
+        private GameState _currentState = GameState.MainMenu;
 
         public PlayerShip Player => _playerShip;
 
@@ -52,12 +68,35 @@ namespace LRG.Master
                 StopCoroutine(_levelCoroutine);
         }
 
+        public void Cancel()
+        {
+            switch (_currentState)
+            {
+                case GameState.MainMenu:
+                    _main_menu_quit_clicked();
+                    break;
+
+                case GameState.GameOver:
+                    _game_over_quit_clicked();
+                    break;
+
+                case GameState.Play:
+                    _game_over_menu_clicked();
+                    break;
+            }
+        }
+
         public void Begin()
         {
-            _playerShip.Reinitialize();
+            _currentState = GameState.MainMenu;
+            _registeredTargets ??= new List<Target>();
 
-            _currentLevel = 0;
-            _start_countdown();
+            _mainMenu.SetActive(true);
+            _gameScreen.SetActive(false);
+            _gameOver.SetActive(false);
+
+            _mainMenu.OnPlayClicked += _main_menu_play_clicked;
+            _mainMenu.OnQuitClicked += _main_menu_quit_clicked;
         }
 
         private void _start_countdown()
@@ -76,6 +115,7 @@ namespace LRG.Master
         {
             Queue<Target> targets = gameLevel.GetTargets();
             _targetCount = targets.Count;
+            _registeredTargets.Clear();
 
             while (_targetCount > 0)
             {
@@ -88,6 +128,7 @@ namespace LRG.Master
                         target.OnDespawned += _target_despawned;
                         target.OnDestroyed += _target_destroyed;
                         target.SetTarget(_playerShip);
+                        _registeredTargets.Add(target);
 
                         TargetTrack selectedTrack = availableTracks.Random();
                         selectedTrack.SetOccupant(target);
@@ -97,14 +138,14 @@ namespace LRG.Master
                 yield return new WaitForSeconds(gameLevel.SpawnDelay);
             }
 
-            _next_level();
+            _next_level(gameLevel.CompletionAward);
             yield return null;
         }
 
         private void _target_destroyed(Target target)
         {
             target.OnDestroyed -= _target_destroyed;
-            _playerShip.GainGold(target.GoldValue); 
+            _playerShip.GainGold(target.GoldValue);
         }
 
         private void _target_despawned(IPooledObject<TargetType> obj)
@@ -118,12 +159,106 @@ namespace LRG.Master
             _targetCount--;
         }
 
-        private void _next_level()
+        private void _next_level(int award)
         {
+            _playerShip.GainGold(award);
+
             if (_currentLevel < _gameLevels.Count - 1) // we'll just repeat the last level in the list indefinitely
                 _currentLevel++;  
-            
+
             _start_countdown();
+        }
+
+        private void _player_destroyed()
+        {
+            _playerShip.OnDestroyed -= _player_destroyed;
+
+            _currentState = GameState.GameOver;
+            StopCoroutine(_levelCoroutine);
+            _levelCoroutine = null;
+
+            _gameScreen.SetActive(false);
+            _gameOver.SetActive(true);
+
+            _gameOver.OnPlayClicked += _game_over_play_clicked;
+            _gameOver.OnMainMenuClicked += _game_over_menu_clicked;
+            _gameOver.OnQuitClicked += _game_over_quit_clicked;
+        }
+
+        private void _play_game()
+        {
+            _currentState = GameState.Play;
+
+            _mainMenu.SetActive(false);
+            _gameOver.SetActive(false);
+            _gameScreen.SetActive(true);
+
+            _playerShip.Reinitialize();
+            _playerShip.OnDestroyed += _player_destroyed;
+            
+            _currentLevel = 0;
+            _start_countdown();
+        }
+
+        private void _despawn_level()
+        {
+            foreach(Target target in _registeredTargets)
+            {
+                target.OnDestroyed -= _target_destroyed;
+                target.OnDespawned -= _target_despawned;
+            }
+
+            TargetFactory.Instance.DespawnAll();
+            ProjectileFactory.Instance.DespawnAll();
+
+            _targetCount = 0;
+            foreach (TargetTrack track in _targetTracks)
+                track.SetOccupant(null);
+        }
+
+        private void _main_menu_play_clicked()
+        {
+            _mainMenu.OnPlayClicked -= _main_menu_play_clicked;
+            _mainMenu.OnQuitClicked -= _main_menu_quit_clicked;
+
+            _play_game();
+        }
+
+        private void _main_menu_quit_clicked()
+        {
+            _mainMenu.OnPlayClicked -= _main_menu_play_clicked;
+            _mainMenu.OnQuitClicked -= _main_menu_quit_clicked;
+
+            OnGameExit?.Invoke();
+        }
+
+        private void _game_over_play_clicked()
+        {
+            _gameOver.OnPlayClicked -= _game_over_play_clicked;
+            _gameOver.OnMainMenuClicked -= _game_over_menu_clicked;
+            _gameOver.OnQuitClicked -= _game_over_quit_clicked;
+
+            _despawn_level();
+            _play_game();
+        }
+
+        private void _game_over_menu_clicked()
+        {
+            _gameOver.OnPlayClicked -= _game_over_play_clicked;
+            _gameOver.OnMainMenuClicked -= _game_over_menu_clicked;
+            _gameOver.OnQuitClicked -= _game_over_quit_clicked;
+            _despawn_level();
+
+            Begin();
+        }
+
+        private void _game_over_quit_clicked()
+        {
+            _gameOver.OnPlayClicked -= _game_over_play_clicked;
+            _gameOver.OnMainMenuClicked -= _game_over_menu_clicked;
+            _gameOver.OnQuitClicked -= _game_over_quit_clicked;
+
+            OnGameExit?.Invoke();
         }
     }
 }

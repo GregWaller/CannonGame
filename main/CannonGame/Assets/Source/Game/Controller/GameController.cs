@@ -15,13 +15,13 @@ namespace LRG.Master
         public static string DevelopedBy = "Greg Waller";
         public static int CopyrightYear = 2023;
 
-        public static VersionData CurrentVersion { get; private set; } = new VersionData(0, 0, 1, 0);
+        public static VersionData CurrentVersion { get; private set; } = new VersionData(0, 0, 2, 0);
 
         [Header("UI/UX")]
         [SerializeField] private InputController _inputController = null;
         [SerializeField] private LevelController _levelController = null;
 
-        public PlayerShip Player => _levelController.Player;
+        public LevelController LevelController => _levelController;
 
         public virtual void Start()
         {
@@ -31,11 +31,12 @@ namespace LRG.Master
             //EffectGenerator.Instance.RegisterMaster(this);
             ProjectileFactory.Instance.Initialize();
             TargetFactory.Instance.Initialize();
+            VisualEffectFactory.Instance.Initialize();
 
             Debug.Log($"Initializing GameController v{CurrentVersion}...");
             Debug.Assert(_inputController != null, "InputController must be specified");
             Debug.Assert(_levelController != null, "LevelController must be specified");
-            //Debug.Assert(_desktop != null, "Console must be specified");
+            _levelController.OnGameExit += _exit_application;
 
             Run(_load_scene());
         }
