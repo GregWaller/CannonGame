@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Level 1
   m_EditorClassIdentifier: 
   _spawnableTypes: 01000000
-  _spawnCount: 10
+  _spawnCount: 3
   _spawnDelay: 2
+  _completionAward: 1000
