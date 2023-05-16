@@ -18,10 +18,10 @@ MonoBehaviour:
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 0.96
+    m_Value: 2.32
   intensity:
     m_OverrideState: 1
-    m_Value: 0.671
+    m_Value: 0.697
   scatter:
     m_OverrideState: 0
     m_Value: 0.332
@@ -97,7 +97,7 @@ MonoBehaviour:
     m_Value: 1
   seaLevel:
     m_OverrideState: 1
-    m_Value: -4500
+    m_Value: -10000
   planetaryRadius:
     m_OverrideState: 0
     m_Value: 6378100
@@ -136,7 +136,7 @@ MonoBehaviour:
     m_Value: 8
   groundTint:
     m_OverrideState: 1
-    m_Value: {r: 0.122641504, g: 0.1043775, b: 0.09313812, a: 1}
+    m_Value: {r: 0, g: 0, b: 0, a: 1}
   groundColorTexture:
     m_OverrideState: 0
     m_Value: {fileID: 0}
@@ -175,7 +175,7 @@ MonoBehaviour:
     m_Value: {r: 1, g: 1, b: 1, a: 1}
   horizonZenithShift:
     m_OverrideState: 0
-    m_Value: 0
+    m_Value: 0.25
   m_SkyVersion: 1
   m_ObsoleteEarthPreset:
     m_OverrideState: 0
@@ -345,6 +345,7 @@ MonoBehaviour:
   - {fileID: 7642060734654139733}
   - {fileID: -6343154193312062960}
   - {fileID: -8606550234118078490}
+  - {fileID: 1806897662387085188}
 --- !u!114 &1142777632297148762
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -376,6 +377,25 @@ MonoBehaviour:
   fogType:
     m_OverrideState: 1
     m_Value: 0
+--- !u!114 &1806897662387085188
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b51a78e223a2e504bb88a059b55229ea, type: 3}
+  m_Name: WhiteBalance
+  m_EditorClassIdentifier: 
+  active: 1
+  temperature:
+    m_OverrideState: 1
+    m_Value: -6
+  tint:
+    m_OverrideState: 1
+    m_Value: -10
 --- !u!114 &7642060734654139733
 MonoBehaviour:
   m_ObjectHideFlags: 3

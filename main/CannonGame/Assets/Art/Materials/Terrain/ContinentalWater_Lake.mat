@@ -296,13 +296,13 @@ Material:
     - _mainWaveSize: 2
     - _mainWaveSpeed: 0.1
     - _metallic: 0
-    - _normalStrength: 1
+    - _normalStrength: 0.554
     - _rippleEnd: 0.309
     - _rippleStart: -0.33
     - _secondaryWaveSize: 10
     - _secondaryWaveSpeed: 1
     - _smoothness: 1
-    - _surfaceDisplacement: 0.05
+    - _surfaceDisplacement: 0.01
     - _thickness: 4.52
     - _tideMax: 108
     - _tideMin: 82

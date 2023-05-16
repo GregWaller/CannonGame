@@ -65,17 +65,20 @@ namespace LRG.UI
 
         private void _fire(InputAction.CallbackContext context)
         {
-            _gameController.LevelController.Player.Fire();
+            if (_gameController.LevelController.State == GameState.Play && !_gameController.LevelController.IsCountingDown)
+                _gameController.LevelController.Player.Fire();
         }
 
         private void _repair(InputAction.CallbackContext obj)
         {
-            _gameController.LevelController.Player.Repair();
+            if (_gameController.LevelController.State == GameState.Play)
+                _gameController.LevelController.Player.Repair();
         }
 
         private void _purchase(InputAction.CallbackContext obj)
         {
-            _gameController.LevelController.Player.PurchaseAmmo();
+            if (_gameController.LevelController.State == GameState.Play)
+                _gameController.LevelController.Player.PurchaseAmmo();
         }
 
         private void _quit(InputAction.CallbackContext obj)

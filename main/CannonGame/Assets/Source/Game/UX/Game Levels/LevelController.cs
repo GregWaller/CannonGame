@@ -11,16 +11,16 @@ namespace LRG.Master
     using LRG.UI;
     using LRG.Game;
 
+    public enum GameState
+    {
+        MainMenu,
+        Play,
+        GameOver,
+    }
+
     public class LevelController : MonoBehaviour
     {
         public event Action OnGameExit = delegate { };
-
-        private enum GameState
-        {
-            MainMenu,
-            Play,
-            GameOver,
-        }
 
         [Header("Targets and AI")]
         [SerializeField] private PlayerShip _playerShip = null;
@@ -31,31 +31,74 @@ namespace LRG.Master
         [SerializeField] private List<GameLevel> _gameLevels = null;
 
         [Header("UI & Menus")]
+        
         [SerializeField] private MainMenuUI _mainMenu = null;
         [SerializeField] private GameUI _gameScreen = null;
         [SerializeField] private GameOverUI _gameOver = null;
 
+        [Header("UX")]
+        [SerializeField] private bool _cameraShakeOnDamage = true;
+        [SerializeField] private Camera _mainCamera = null;
+        [SerializeField] private AnimationCurve _cameraShakeOverTime = new AnimationCurve();
+        [SerializeField] private float _cameraShakeInterval = 0.5f;
+        [SerializeField] private float _cameraShakeDuration = 1.5f;
+
         // ----- Level Data
-        private int _currentLevel = 0;
+        private int _currentLevelIDX = 0;
         private bool _countdown = false;
         private float _currentCountdown = 0.0f;
         private int _targetCount = 0;
         private Coroutine _levelCoroutine = null;
         private List<Target> _registeredTargets = null;
         private GameState _currentState = GameState.MainMenu;
+        private int _currentLevel = 1;
+        private int _currentScore = 0;
+
+        // ----- UX
+        private bool _cameraShake = false;
+        private float _currentShakeInterval = 0.0f;
+        private float _currentShakeDuration = 0.0f;
+        private readonly Quaternion _defaultCameraRotation = Quaternion.Euler(35.0f, 0.0f, 0.0f);
 
         public PlayerShip Player => _playerShip;
+        public bool IsCountingDown => _countdown;
+        public int Countdown => (int)_currentCountdown;
+        public int CurrentLevel => _currentLevel;
+        public int CurrentScore => _currentScore;
+        public GameState State => _currentState;
 
         public void Update()
         {
             if (_countdown)
             {
                 _currentCountdown -= Time.deltaTime;
-                Debug.Log($"Countdown: {_currentCountdown} s");
                 if (_currentCountdown <= 0.0f)
                 {
-                    _start_level(_currentLevel);
+                    _start_level(_currentLevelIDX);
                     _countdown = false;
+                }
+            }
+
+            if (_cameraShake)
+            {
+                _currentShakeDuration += Time.deltaTime;
+                _currentShakeInterval += Time.deltaTime;
+                if (_currentShakeDuration >= _cameraShakeDuration)
+                {
+                    _cameraShake = false;
+                    _mainCamera.transform.rotation = _defaultCameraRotation;
+                }
+                else if (_currentShakeInterval >= _cameraShakeInterval)
+                {
+                    _currentShakeInterval = 0.0f;
+
+                    float t = _currentShakeDuration / _cameraShakeDuration;
+                    float magnitude = _cameraShakeOverTime.Evaluate(t);
+                    float x = _defaultCameraRotation.eulerAngles.x + UnityEngine.Random.Range(-1.0f, 1.0f) * magnitude;
+                    float y = _defaultCameraRotation.eulerAngles.y + UnityEngine.Random.Range(-1.0f, 1.0f) * magnitude;
+                    float z = _defaultCameraRotation.eulerAngles.z + UnityEngine.Random.Range(-1.0f, 1.0f) * magnitude;
+                    Quaternion newRotation = Quaternion.Euler(x, y, z);
+                    _mainCamera.transform.rotation = newRotation;
                 }
             }
         }
@@ -161,8 +204,10 @@ namespace LRG.Master
         {
             _playerShip.GainGold(award);
 
-            if (_currentLevel < _gameLevels.Count - 1) // we'll just repeat the last level in the list indefinitely
-                _currentLevel++;  
+            _currentLevel++;
+
+            if (_currentLevelIDX < _gameLevels.Count - 1) // we'll just repeat the last level in the list indefinitely
+                _currentLevelIDX++;  
 
             _start_countdown();
         }
@@ -170,6 +215,8 @@ namespace LRG.Master
         private void _player_destroyed()
         {
             _playerShip.OnDestroyed -= _player_destroyed;
+            _playerShip.OnGoldGained -= _player_gained_gold;
+            _playerShip.OnDamaged -= _player_damaged;
 
             _currentState = GameState.GameOver;
             StopCoroutine(_levelCoroutine);
@@ -193,14 +240,37 @@ namespace LRG.Master
 
             _playerShip.Reinitialize();
             _playerShip.OnDestroyed += _player_destroyed;
-            
-            _currentLevel = 0;
+            _playerShip.OnGoldGained += _player_gained_gold;
+            _playerShip.OnDamaged += _player_damaged;
+
+            _currentLevelIDX = 0;
+            _currentLevel = 1;
             _start_countdown();
+        }
+
+        private void _player_damaged()
+        {
+            if (!_cameraShakeOnDamage) return;
+
+            _cameraShake = true;
+            _currentShakeInterval = 0.0f;
+            _currentShakeDuration = 0.0f;
+        }
+
+        private void _player_gained_gold(int amount)
+        {
+            _currentScore += amount;
         }
 
         private void _despawn_level()
         {
-            foreach(Target target in _registeredTargets)
+            if (_playerShip.Alive)
+                _playerShip.Kill();
+
+            if (_levelCoroutine != null)
+                StopCoroutine(_levelCoroutine);
+
+            foreach (Target target in _registeredTargets)
             {
                 target.OnDestroyed -= _target_destroyed;
                 target.OnDespawned -= _target_despawned;
@@ -245,8 +315,8 @@ namespace LRG.Master
             _gameOver.OnPlayClicked -= _game_over_play_clicked;
             _gameOver.OnMainMenuClicked -= _game_over_menu_clicked;
             _gameOver.OnQuitClicked -= _game_over_quit_clicked;
-            _despawn_level();
 
+            _despawn_level();
             Begin();
         }
 

@@ -10,6 +10,9 @@ namespace LRG.Game
         [SerializeField] private GameObject _barrel = null;
         [SerializeField] private GameObject _housing = null;
 
+        [Header("Manual Aiming Options")]
+        [SerializeField] private bool _useSmoothing = false;
+
         [Header("Yaw")]
         [SerializeField] private float _maxYawSpeed = 2.0f;
         [SerializeField] private float _yawSmoothing = 0.01f;
@@ -76,11 +79,15 @@ namespace LRG.Game
 
             // rotate the entire trunnion based on the current yaw
             Quaternion targetBaseRotation = Quaternion.Euler(0.0f, _currentYaw, 0.0f); 
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetBaseRotation, Time.deltaTime);
+            transform.rotation = _useSmoothing 
+                ? Quaternion.Lerp(transform.rotation, targetBaseRotation, Time.deltaTime)
+                : targetBaseRotation;
 
             // then only rotate the barrel based on the current pitch
             Quaternion targetBarrelRotation = Quaternion.Euler(_currentPitch, 0.0f, 0.0f);
-            _barrel.transform.localRotation = Quaternion.Lerp(_barrel.transform.localRotation, targetBarrelRotation, Time.deltaTime);
+            _barrel.transform.localRotation = _useSmoothing
+                ? Quaternion.Lerp(_barrel.transform.localRotation, targetBarrelRotation, Time.deltaTime)
+                : targetBarrelRotation;
         }
 
         #endregion

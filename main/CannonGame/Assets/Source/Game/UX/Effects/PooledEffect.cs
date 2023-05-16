@@ -13,13 +13,15 @@ namespace LRG.Game
         Cannon_Fire, 
         Cannon_Smoke,
         Water_Splash,
-        Target_Hit
+        Target_Hit,
+        Water_BigSplash,
+        Wave_Crash
     };
 
     [RequireComponent(typeof(VisualEffect))]
-    public abstract class PooledEffect : PooledObject<EffectType>
+    public class PooledEffect : PooledObject<EffectType>
     {
-        protected abstract EffectType _effectType { get; }
+        [SerializeField] private EffectType _effectType = EffectType.Unassigned;
 
         private VisualEffect _vfx = null;
         private bool _awaitingFirstParticle = false;

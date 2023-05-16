@@ -9,10 +9,13 @@ namespace LRG.Game
     public class PlayerShip : MonoBehaviour
     {
         public event Action OnDestroyed = delegate { };
+        public event Action<int> OnGoldGained = delegate { };
+        public event Action OnDamaged = delegate { };
 
         [Header("Ship")]
         [SerializeField] private int _baseHull = 10;
         [SerializeField] private int _repairAmount = 1;
+        [SerializeField] private Transform _targetPosition = null;
 
         [Header("Cannon")]
         [SerializeField] private Cannon _cannon = null;
@@ -28,7 +31,6 @@ namespace LRG.Game
         [SerializeField] private int _ammoCost = 100;
 
         [Header("Debugging")]
-        [SerializeField] private Transform _targetPosition = null;
         [SerializeField] private float _rawAccuracy = 1.0f;
         [SerializeField] private bool _showAccuracyIndicator = false;
 
@@ -44,6 +46,7 @@ namespace LRG.Game
         public int Gold => _currentGold;
         public int Ammo => _currentAmmo;
         public Cannon Cannon => _cannon;
+        public bool Alive => _alive;
 
         public void Awake()
         {
@@ -70,6 +73,8 @@ namespace LRG.Game
                 if (!_alive) return;
 
                 _currentHull -= projectile.Damage;
+                OnDamaged?.Invoke();
+
                 if (_currentHull <= 0)
                 {
                     _alive = false;
@@ -112,6 +117,7 @@ namespace LRG.Game
         public void GainGold(int amount)
         {
             _currentGold += amount;
+            OnGoldGained?.Invoke(amount);
         }
 
         public void PurchaseAmmo()
@@ -121,6 +127,11 @@ namespace LRG.Game
                 _currentGold -= _ammoCost;
                 _currentAmmo += _ammoPerPurchase;
             }
+        }
+
+        public void Kill()
+        {
+            _alive = false;
         }
 
         private void _consume_ammo(int amount)

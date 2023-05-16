@@ -79,7 +79,7 @@ namespace LRG.Master
                     toReclaim.Add(managedObject);
 
             foreach (T managedObject in toReclaim)
-                _reclaim(managedObject);
+                managedObject.Despawn();
         }
 
         private T _generate(K requestedType)

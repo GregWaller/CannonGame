@@ -25,7 +25,11 @@ namespace LRG.Game
         [Header("Movement")]
         [SerializeField] private float _minSpeed = 0.1f;
         [SerializeField] private float _maxSpeed = 0.5f;
-        [SerializeField] private float _sinkingSpeed = 0.1f;
+
+        [Header("Sinking")]
+        [SerializeField] private float _sinkDuration = 2.0f;
+        [SerializeField] private float _sinkSpeedFactor = 0.1f;
+        [SerializeField] private AnimationCurve _depthOverTime = new AnimationCurve();
 
         [Header("Enemy Data")]
         [SerializeField] private Cannon _cannon = null;
@@ -43,7 +47,9 @@ namespace LRG.Game
         private PlayerShip _playerShip = null;
         private float _firingDelay = 0.0f;
         private bool _sinking = false;
+        private float _currentSinkTime = 0.0f;
         private Vector3 _destroyedPosition = Vector3.zero;
+        private Vector3 _sinkLookPosition = Vector3.zero;
 
         public override TargetType Key => _targetType;
         public int GoldValue => _goldValue;
@@ -65,15 +71,16 @@ namespace LRG.Game
         {
             if (_sinking)
             {
-                Vector3 targetPosition = _destroyedPosition + (-Vector3.up * 10.0f);
-                transform.position = transform.position + (-Vector3.up * _sinkingSpeed);
+                transform.LookAt(_sinkLookPosition);
 
-                Vector3 lookPosition = _destroyedPosition + (transform.forward * 75.0f);
-                transform.LookAt(lookPosition);
+                _currentSinkTime += Time.deltaTime;
+                float t = _currentSinkTime / _sinkDuration;
+                float sinkDepth = _depthOverTime.Evaluate(t);
+                transform.position = new Vector3(transform.position.x, transform.position.y + (sinkDepth * _sinkSpeedFactor), transform.position.z);
 
-                if (Vector3.Distance(transform.position, targetPosition) < 0.001f)
+                if (_currentSinkTime >= _sinkDuration)
                     _sink_complete();
-
+                
                 return;
             }
 
@@ -102,6 +109,8 @@ namespace LRG.Game
 
                 _sinking = true;
                 _destroyedPosition = transform.position;
+                _sinkLookPosition = _destroyedPosition + (transform.forward * 10.0f);
+                _currentSinkTime = 0.0f;
                 projectile.Despawn();
             }
         }
@@ -111,16 +120,16 @@ namespace LRG.Game
             _waypoints = new List<Vector3>();
         }
 
-        public override void Activate(bool active)
+        public override void Despawn()
         {
-            base.Activate(active);
-            gameObject.SetActive(active);
-            
+            _sinking = false;
+            gameObject.SetActive(false);
+            _waypoints.Clear(); 
+            base.Despawn();
         }
 
         private void _sink_complete()
         {
-            _sinking = false;
             Despawn();
             OnDestroyed?.Invoke(this);
         }
@@ -130,10 +139,11 @@ namespace LRG.Game
             if (waypoints.Count < 2)
             {
                 Debug.LogError("Error: Could not start target patrol -- Insufficient waypoints.");
+                Despawn();
                 return;
             }
 
-            _waypoints.Clear();
+            gameObject.SetActive(true);
             _waypoints.AddRange(waypoints);
 
             _currentWaypointIDX = 0;
@@ -142,8 +152,6 @@ namespace LRG.Game
             _currentSpeed = UnityEngine.Random.Range(_minSpeed, _maxSpeed);
 
             _set_next_waypoint();
-
-            gameObject.SetActive(true);
         }
 
         public void SetTarget(PlayerShip playerShip)
