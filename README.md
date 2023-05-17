@@ -39,7 +39,7 @@ The rest was, as they say, gravy.  I imported a number of particle systems I had
 I wrapped up development on this project on the evening of Tuesday, May 16th, 2023, as I sat down to write this README.  I spent a total of 42 hours building this project, broken down as follows:
 
 - Project Management: 5 hours
-	- Includes Requirements Analysis, Design, Planning, Builds, Planning, and Repository Management
+	- Includes Requirements Analysis, Design, Builds, Planning, and Repository Management
 - Programming: 24 hours, 30 minutes
 	- Includes Gameplay and Systems programming
 - Art: 13 hours
