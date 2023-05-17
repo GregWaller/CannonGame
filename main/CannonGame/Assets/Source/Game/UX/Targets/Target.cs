@@ -15,12 +15,11 @@ namespace LRG.Game
     }
 
     [RequireComponent(typeof(Collider))]
-    public abstract class Target : PooledObject<TargetType>
+    public class Target : PooledObject<TargetType>
     {
         public event Action<Target> OnDestroyed = delegate { };
 
         private const float _WAYPOINT_THRESHOLD = 0.001f;
-        protected abstract TargetType _targetType { get; }
 
         [Header("Movement")]
         [SerializeField] private float _minSpeed = 0.1f;
@@ -32,6 +31,7 @@ namespace LRG.Game
         [SerializeField] private AnimationCurve _depthOverTime = new AnimationCurve();
 
         [Header("Enemy Data")]
+        [SerializeField] private TargetType _targetType = TargetType.Unassigned;
         [SerializeField] private Cannon _cannon = null;
         [SerializeField] private int _roundsPerMinute = 60;
         [SerializeField] private float _accuracy = 1.0f;    // TODO: min accuracy is 1, max accuracy is 40
@@ -111,6 +111,7 @@ namespace LRG.Game
                 _destroyedPosition = transform.position;
                 _sinkLookPosition = _destroyedPosition + (transform.forward * 10.0f);
                 _currentSinkTime = 0.0f;
+                OnDestroyed?.Invoke(this);
                 projectile.Despawn();
             }
         }
@@ -128,10 +129,11 @@ namespace LRG.Game
             base.Despawn();
         }
 
+        public override void Reinitialize() { }
+
         private void _sink_complete()
         {
             Despawn();
-            OnDestroyed?.Invoke(this);
         }
 
         public void Patrol(List<Vector3> waypoints)

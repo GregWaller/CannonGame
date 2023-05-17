@@ -21,6 +21,7 @@ namespace LRG.Master
     public class LevelController : MonoBehaviour
     {
         public event Action OnGameExit = delegate { };
+        public event Action<Vector3, int> OnTargetDestroyed = delegate { };
 
         [Header("Targets and AI")]
         [SerializeField] private PlayerShip _playerShip = null;
@@ -31,7 +32,6 @@ namespace LRG.Master
         [SerializeField] private List<GameLevel> _gameLevels = null;
 
         [Header("UI & Menus")]
-        
         [SerializeField] private MainMenuUI _mainMenu = null;
         [SerializeField] private GameUI _gameScreen = null;
         [SerializeField] private GameOverUI _gameOver = null;
@@ -140,6 +140,14 @@ namespace LRG.Master
             _mainMenu.OnQuitClicked += _main_menu_quit_clicked;
         }
 
+        public Vector2 WorldPositionToScaledScreenPoint(Vector3 worldPosition)
+        {
+            Vector2 screenPos = _mainCamera.WorldToScreenPoint(worldPosition);
+            float posX = (screenPos.x * 1920.0f) / Screen.width;
+            float posY = (screenPos.y * 1080.0f) / Screen.height;
+            return new Vector2(posX, posY);
+        }
+
         private void _start_countdown()
         {
             _countdown = true;
@@ -187,6 +195,8 @@ namespace LRG.Master
         {
             target.OnDestroyed -= _target_destroyed;
             _playerShip.GainGold(target.GoldValue);
+
+            OnTargetDestroyed?.Invoke(target.transform.position, target.GoldValue);
         }
 
         private void _target_despawned(IPooledObject<TargetType> obj)

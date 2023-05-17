@@ -69,19 +69,19 @@ namespace LRG.UI
                 _gameController.LevelController.Player.Fire();
         }
 
-        private void _repair(InputAction.CallbackContext obj)
+        private void _repair(InputAction.CallbackContext context)
         {
             if (_gameController.LevelController.State == GameState.Play)
                 _gameController.LevelController.Player.Repair();
         }
 
-        private void _purchase(InputAction.CallbackContext obj)
+        private void _purchase(InputAction.CallbackContext context)
         {
             if (_gameController.LevelController.State == GameState.Play)
                 _gameController.LevelController.Player.PurchaseAmmo();
         }
 
-        private void _quit(InputAction.CallbackContext obj)
+        private void _quit(InputAction.CallbackContext context)
         {
             _gameController.LevelController.Cancel();
         }

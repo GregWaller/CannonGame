@@ -15,4 +15,4 @@ MonoBehaviour:
   _spawnableTypes: 01000000
   _spawnCount: 3
   _spawnDelay: 2
-  _completionAward: 1000
+  _completionAward: 100

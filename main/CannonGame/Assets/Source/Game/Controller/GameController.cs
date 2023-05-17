@@ -34,7 +34,6 @@ namespace LRG.Master
 
             yield return _init_factories();
             yield return _init_ui();
-            yield return _init_postprocessing();
             yield return _init_audio();
 
             Debug.Log("Load complete.  Transferring control to player.");
@@ -58,29 +57,6 @@ namespace LRG.Master
             Debug.Assert(_levelController != null, "LevelController must be specified");
             _inputController.RegisterGameController(this);
             _levelController.OnGameExit += _exit_application;
-
-            yield return null;
-        }
-
-        private IEnumerator _init_postprocessing()
-        {
-            Debug.Log("Initializing Post-Processing...");
-
-            //Sky.updateMode.Override(EnvironmentUpdateMode.OnDemand);
-            //Sky.updateMode.overrideState = true;
-
-            // TODO: apply post processing settings
-            // bool dof = DataManager.Instance.Settings.DepthOfField;
-            // if (DOF != null)
-            //     DOF.active = dof;
-            // 
-            // bool motionBlur = DataManager.Instance.Settings.MotionBlur;
-            // if (MotionBlur != null)
-            //     MotionBlur.active = motionBlur;
-            // 
-            // bool volumetricFog = DataManager.Instance.Settings.VolumetricFog;
-            // if (Fog != null)
-            //     Fog.enableVolumetricFog.overrideState = volumetricFog;
 
             yield return null;
         }

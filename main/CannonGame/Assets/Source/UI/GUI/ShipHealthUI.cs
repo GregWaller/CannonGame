@@ -12,7 +12,6 @@ namespace LRG.UI
     {
         [SerializeField] private PlayerShip _playerShip = null;
         [SerializeField] private Image _shipHP = null;
-        [SerializeField] private TextMeshProUGUI _shipHPNumbers = null;
         [SerializeField] private GameObject _lowHullIndicator = null;
         [SerializeField] private int _lowHealthThreshold = 3;
         [SerializeField] private float _lowHealthFlashInterval = 0.2f;
@@ -24,7 +23,6 @@ namespace LRG.UI
         {
             if (_playerShip == null) return;
 
-            _shipHPNumbers.text = $"{_playerShip.Hull}/{_playerShip.BaseHull}";
             _shipHP.fillAmount = (float)_playerShip.Hull / (float)_playerShip.BaseHull;
 
             if (_playerShip.Hull <= _lowHealthThreshold)

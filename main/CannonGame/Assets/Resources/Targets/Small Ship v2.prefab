@@ -63,60 +63,61 @@ MonoBehaviour:
   m_GameObject: {fileID: 816328257291891848}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e093f3e1cb097c4386db0e3daa292a5, type: 3}
+  m_Script: {fileID: 11500000, guid: d9b0d51f30f17c442b1724deb5160cc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _minSpeed: 0.05
   _maxSpeed: 0.15
-  _sinkDuration: 3
-  _sinkSpeedFactor: 0.08
+  _sinkDuration: 2
+  _sinkSpeedFactor: 0.1
   _depthOverTime:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: -0.35822585
-      outSlope: -0.35822585
+      inSlope: -0.07832447
+      outSlope: -0.07832447
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.5021301
+      outWeight: 0.6305108
     - serializedVersion: 3
-      time: 0.10273628
-      value: -0.050774068
-      inSlope: -1.0815423
-      outSlope: -1.0815423
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.46324027
-      outWeight: 0.29393888
-    - serializedVersion: 3
-      time: 0.34082568
-      value: -0.67940813
-      inSlope: -1.7364382
-      outSlope: -1.7364382
+      time: 0.16156356
+      value: -0.025925249
+      inSlope: -0.6459331
+      outSlope: -0.6459331
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.07025656
+      outWeight: 0.08792693
+    - serializedVersion: 3
+      time: 0.48740512
+      value: -0.70984244
+      inSlope: -1.0493503
+      outSlope: -1.0493503
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.16997246
     - serializedVersion: 3
       time: 1
       value: -1
-      inSlope: -0.5147524
-      outSlope: -0.5147524
-      tangentMode: 0
+      inSlope: -0.5660563
+      outSlope: -0.5660563
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0.109227575
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _targetType: 1
   _cannon: {fileID: 4189273215995543854}
-  _roundsPerMinute: 15
-  _accuracy: 1
+  _roundsPerMinute: 30
+  _accuracy: 20
   _damagePerRound: 1
-  _goldValue: 100
+  _goldValue: 50
 --- !u!1 &2308164006891027229
 GameObject:
   m_ObjectHideFlags: 0
@@ -279,8 +280,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3519998033322944588}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalPosition: {x: -0, y: 0.029, z: -0.557}
+  m_LocalScale: {x: 85.738, y: 100, z: 33.456135}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7003790356854730748}

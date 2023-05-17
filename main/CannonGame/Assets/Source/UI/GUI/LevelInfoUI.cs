@@ -7,8 +7,6 @@ namespace LRG.UI
 {
     using LRG.Master;
 
-    using UnityEngine.InputSystem.LowLevel;
-
     public class LevelInfoUI : MonoBehaviour
     {
         [SerializeField] private LevelController _levelController = null;
