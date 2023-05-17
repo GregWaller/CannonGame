@@ -5,8 +5,6 @@ using TMPro;
 
 namespace LRG.UI
 {
-    using System;
-
     using LRG.Master;
 
     public class GameUI : MonoBehaviour

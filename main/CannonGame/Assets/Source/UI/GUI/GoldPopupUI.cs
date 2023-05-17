@@ -1,13 +1,10 @@
 ﻿/* © 2023 - Greg Waller.  All rights reserved. */
 
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 namespace LRG.UI
 {
-    using LRG.Game;
-
     [RequireComponent(typeof(RectTransform))]
     public class GoldPopupUI : MonoBehaviour
     {
